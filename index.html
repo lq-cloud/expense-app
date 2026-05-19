@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)https://7777-iakfh61uhswrdphhr16ja.e2b.app/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>💳 Leif &amp; Nicole — Expense Splitter</title>
+<script src="./index_files/xlsx.full.min.js"></script>
+<style>
+:root {
+  --blue:      #3b82f6;
+  --blue-lt:   #eff6ff;
+  --blue-dk:   #1d4ed8;
+  --blue-mid:  #2563eb;
+  --pink:      #ec4899;
+  --pink-lt:   #fdf2f8;
+  --pink-dk:   #be185d;
+  --green:     #10b981;
+  --green-lt:  #ecfdf5;
+  --green-dk:  #065f46;
+  --amber:     #f59e0b;
+  --amber-lt:  #fffbeb;
+  --amber-dk:  #92400e;
+  --red:       #ef4444;
+  --red-lt:    #fef2f2;
+  --red-dk:    #991b1b;
+  --purple:    #8b5cf6;
+  --purple-lt: #f5f3ff;
+  --purple-dk: #5b21b6;
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --surface:   #ffffff;
+  --radius-sm: 6px;
+  --radius:    10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+  --shadow:    0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--slate-50);color:var(--slate-800);min-height:100vh;font-size:14px}
+
+/* ── TOPBAR ── */
+#topbar{background:var(--surface);border-bottom:1px solid var(--slate-200);padding:0 24px;height:60px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm)}
+#topbar-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+#topbar-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--blue-mid),var(--pink));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+#topbar-title{font-size:16px;font-weight:800;color:var(--slate-900);letter-spacing:-.3px}
+#topbar-sub{font-size:11px;color:var(--slate-400);font-weight:500;margin-top:1px}
+#topbar-nav{display:flex;gap:2px;flex:1;justify-content:center}
+.nav-btn{border:none;background:none;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--slate-500);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.nav-btn:hover{background:var(--slate-100);color:var(--slate-700)}
+.nav-btn.active{background:var(--blue-lt);color:var(--blue-dk)}
+#topbar-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbtn{border:1px solid var(--slate-200);background:var(--surface);border-radius:var(--radius-sm);padding:7px 12px;font-size:12px;font-weight:600;color:var(--slate-600);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap}
+.tbtn:hover{background:var(--slate-50);border-color:var(--slate-300)}
+.tbtn.primary{background:var(--blue-mid);color:#fff;border-color:var(--blue-mid)}
+.tbtn.primary:hover{background:var(--blue-dk);border-color:var(--blue-dk)}
+
+/* ── PROGRESS ── */
+#prog-wrap{height:3px;background:var(--slate-200)}
+#prog-fill{height:3px;background:linear-gradient(90deg,var(--blue-mid),var(--green));transition:width .5s ease;width:0%}
+
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── FILTER BAR ── */
+#filter-bar{background:var(--surface);border-bottom:1px solid var(--slate-200);padding:0 24px;position:sticky;top:60px;z-index:100;box-shadow:var(--shadow-sm)}
+#filter-row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0 8px;border-bottom:1px solid var(--slate-100)}
+#filter-row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0 10px}
+.f-input{border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:7px 11px;font-size:13px;background:var(--slate-50);outline:none;color:var(--slate-800);transition:all .15s}
+.f-input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+#search-input{flex:1;min-width:180px;max-width:280px;padding-left:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center}
+.match-hl{background:#fef08a;border-radius:2px;padding:0 1px}
+.date-range{display:flex;align-items:center;gap:6px}
+.date-range label{font-size:11px;font-weight:700;color:var(--slate-400);white-space:nowrap}
+.date-input{border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:6px 9px;font-size:12px;background:var(--slate-50);outline:none;color:var(--slate-800);cursor:pointer;transition:all .15s}
+.date-input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.date-input::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer}
+.preset-row{display:flex;gap:4px}
+.preset{border:1px solid var(--slate-200);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--slate-500);transition:all .15s;white-space:nowrap}
+.preset:hover{border-color:var(--slate-300);color:var(--slate-700)}
+.preset.active{background:var(--slate-800);border-color:var(--slate-800);color:#fff}
+.chip-row{display:flex;gap:4px;flex-wrap:wrap}
+.chip{border:1px solid var(--slate-200);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--slate-500);transition:all .15s}
+.chip:hover{border-color:var(--slate-300);color:var(--slate-700)}
+.chip.active{background:var(--blue-mid);border-color:var(--blue-mid);color:#fff}
+.chip.leif-chip.active  {background:var(--blue-mid);border-color:var(--blue-mid)}
+.chip.nicole-chip.active{background:var(--pink);border-color:var(--pink)}
+.chip.split-chip.active {background:var(--green);border-color:var(--green)}
+.chip.unass-chip.active {background:var(--amber);border-color:var(--amber)}
+#filter-stats{margin-left:auto;font-size:12px;color:var(--slate-400);font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.clear-btn{border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--slate-500);transition:all .15s;display:flex;align-items:center;gap:4px}
+.clear-btn:hover{background:var(--amber-lt);border-color:var(--amber);color:var(--amber-dk)}
+.clear-btn.hidden{visibility:hidden;pointer-events:none}
+#active-tags{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.atag{display:inline-flex;align-items:center;gap:4px;background:var(--blue-lt);border:1px solid var(--blue);border-radius:12px;padding:3px 8px;font-size:11px;font-weight:700;color:var(--blue-dk)}
+.atag-x{cursor:pointer;opacity:.6;font-size:10px;margin-left:1px}
+.atag-x:hover{opacity:1}
+
+/* ── RECEIPT LIST ── */
+#receipt-list{padding:16px 24px;display:flex;flex-direction:column;gap:10px;max-width:1100px;margin:0 auto}
+.receipt-card{background:var(--surface);border:1px solid var(--slate-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;transition:box-shadow .15s}
+.receipt-card:hover{box-shadow:var(--shadow)}
+.receipt-header{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;transition:background .12s}
+.receipt-header:hover{background:var(--slate-50)}
+.rc-chevron{color:var(--slate-400);transition:transform .2s;font-size:11px;flex-shrink:0}
+.receipt-card.open .rc-chevron{transform:rotate(90deg)}
+.rc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden;background:var(--slate-100)}
+.rc-icon img{width:100%;height:100%;object-fit:contain;padding:4px}
+.rc-icon.fallback{background:linear-gradient(135deg,var(--blue-lt),var(--blue-mid) 200%)}
+.rc-info{flex:1;min-width:0}
+.rc-store{font-weight:700;font-size:14px;color:var(--slate-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-meta{font-size:11px;color:var(--slate-400);margin-top:2px}
+.rc-pills{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.rc-pill{padding:3px 8px;border-radius:12px;font-size:11px;font-weight:700}
+.rc-pill.leif      {background:var(--blue-lt);color:var(--blue-dk)}
+.rc-pill.nicole    {background:var(--pink-lt);color:var(--pink-dk)}
+.rc-pill.split     {background:var(--green-lt);color:var(--green-dk)}
+.rc-pill.unassigned{background:var(--amber-lt);color:var(--amber-dk)}
+.rc-total{font-weight:800;font-size:15px;color:var(--slate-900);flex-shrink:0;min-width:70px;text-align:right}
+.rc-delete{width:28px;height:28px;border-radius:6px;border:1px solid transparent;background:none;color:var(--slate-300);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:13px}
+.rc-delete:hover{background:var(--red-lt);border-color:var(--red);color:var(--red)}
+.receipt-bulk{padding:8px 18px;background:var(--slate-50);border-top:1px solid var(--slate-100);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.bulk-label{font-size:11px;color:var(--slate-400);font-weight:600;margin-right:2px}
+.bbtn{border:1px solid transparent;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:all .12s}
+.bbtn.leif  {background:var(--blue-lt);border-color:var(--blue);color:var(--blue-dk)}
+.bbtn.leif:hover  {background:var(--blue-mid);color:#fff}
+.bbtn.nicole{background:var(--pink-lt);border-color:var(--pink);color:var(--pink-dk)}
+.bbtn.nicole:hover{background:var(--pink);color:#fff}
+.bbtn.split {background:var(--green-lt);border-color:var(--green);color:var(--green-dk)}
+.bbtn.split:hover {background:var(--green);color:#fff}
+.bbtn.clear {background:var(--surface);border-color:var(--slate-200);color:var(--slate-500)}
+.bbtn.clear:hover {background:var(--amber-lt);border-color:var(--amber);color:var(--amber-dk)}
+.bbtn.del   {background:var(--red-lt);border-color:var(--red);color:var(--red-dk);margin-left:auto}
+.bbtn.del:hover{background:var(--red);color:#fff}
+.receipt-items{display:none}
+.receipt-card.open .receipt-items{display:block}
+.line-item{padding:10px 18px;border-top:1px solid var(--slate-100);display:flex;align-items:center;gap:10px}
+.line-item:nth-child(even){background:#fafbfc}
+.line-item.item-match{background:#fefce8}
+.li-info{flex:1;min-width:0}
+.li-desc{font-size:13px;color:var(--slate-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-cat{font-size:11px;color:var(--slate-400);margin-top:1px}
+.li-amt{font-weight:700;font-size:13px;color:var(--slate-700);min-width:64px;text-align:right;flex-shrink:0}
+.li-btns{display:flex;gap:3px;flex-shrink:0}
+.lbtn{border:1px solid var(--slate-200);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--slate-500);transition:all .12s}
+.lbtn:hover{background:var(--slate-100)}
+.lbtn.al{background:var(--blue-mid);border-color:var(--blue-mid);color:#fff}
+.lbtn.an{background:var(--pink);border-color:var(--pink);color:#fff}
+.lbtn.as{background:var(--green);border-color:var(--green);color:#fff}
+.lbtn.clr{color:var(--slate-400);font-size:10px}
+.lbtn.clr:hover{background:var(--amber-lt);border-color:var(--amber);color:var(--amber-dk)}
+.lbtn.edit-btn{padding:4px 7px;font-size:11px;color:var(--slate-400);border-color:var(--slate-200)}.lbtn.edit-btn:hover{background:var(--blue-lt);border-color:var(--blue-mid);color:var(--blue-mid)}
+
+/* ── EMPTY / NO RESULTS ── */
+#empty-state{text-align:center;padding:100px 20px}
+.empty-icon{font-size:56px;margin-bottom:16px}
+#empty-state h2{font-size:24px;font-weight:800;color:var(--slate-900);margin-bottom:10px}
+#empty-state p{font-size:14px;color:var(--slate-500);line-height:1.7;max-width:400px;margin:0 auto 28px}
+.big-btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue-mid);color:#fff;border:none;border-radius:var(--radius);padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;box-shadow:0 4px 14px rgba(37,99,235,.35)}
+.big-btn:hover{background:var(--blue-dk)}
+#no-results{text-align:center;padding:60px 20px}
+#no-results h3{font-size:18px;font-weight:700;color:var(--slate-700);margin-bottom:8px}
+#no-results p{font-size:13px;color:var(--slate-400);margin-bottom:20px}
+
+/* ── DASHBOARD ── */
+#dash-inner{padding:24px;max-width:1200px;margin:0 auto}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.blue::before{background:linear-gradient(90deg,var(--blue-mid),var(--blue))}
+.stat-card.pink::before{background:linear-gradient(90deg,var(--pink-dk),var(--pink))}
+.stat-card.green::before{background:linear-gradient(90deg,var(--green-dk),var(--green))}
+.stat-card.amber::before{background:linear-gradient(90deg,var(--amber-dk),var(--amber))}
+.stat-label{font-size:11px;color:var(--slate-400);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.stat-val{font-size:28px;font-weight:900;letter-spacing:-.8px;line-height:1}
+.stat-val.blue{color:var(--blue-dk)}
+.stat-val.pink{color:var(--pink-dk)}
+.stat-val.green{color:var(--green-dk)}
+.stat-val.amber{color:var(--amber-dk)}
+.stat-sub{font-size:12px;color:var(--slate-400);margin-top:6px}
+.balance-card{background:linear-gradient(135deg,var(--slate-900),var(--slate-700));border-radius:var(--radius-lg);padding:28px 32px;text-align:center;margin-bottom:20px;box-shadow:var(--shadow-md);color:#fff}
+.bal-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;opacity:.6;margin-bottom:8px}
+.bal-amount{font-size:44px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.bal-sub{font-size:14px;opacity:.7;margin-top:8px}
+.dash-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:700px){.dash-row{grid-template-columns:1fr}}
+.dash-card{background:var(--surface);border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow-sm)}
+.dash-card-title{font-size:13px;font-weight:700;color:var(--slate-700);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.dash-card-title .dc-actions{margin-left:auto;display:flex;gap:4px}
+.dc-tab{border:1px solid var(--slate-200);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;background:var(--surface);color:var(--slate-500);transition:all .12s}
+.dc-tab:hover{background:var(--slate-100)}
+.dc-tab.active{background:var(--slate-800);border-color:var(--slate-800);color:#fff}
+.seg-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:10px 0 14px}
+.seg-leif{background:var(--blue-mid)}
+.seg-nicole{background:var(--pink)}
+.seg-split{background:var(--green)}
+.seg-unassigned{background:var(--amber)}
+.legend{display:flex;gap:14px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--slate-600)}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bar-name{font-size:12px;font-weight:600;color:var(--slate-700);width:150px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.bar-logo{width:18px;height:18px;border-radius:4px;object-fit:contain;background:var(--slate-100);flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--slate-100);border-radius:4px;overflow:hidden}
+.bar-fill{height:7px;border-radius:4px;transition:width .4s ease}
+.bar-amt{font-size:12px;font-weight:700;color:var(--slate-500);min-width:58px;text-align:right}
+
+/* ── CHART CANVAS ── */
+.chart-wrap{position:relative;width:100%;overflow:hidden}
+.chart-wrap canvas{display:block;width:100%!important}
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.chart-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--slate-600)}
+.chart-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── RECEIPTS LIST PAGE ── */
+#receipts-inner{padding:24px;max-width:1100px;margin:0 auto}
+#receipts-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+#receipts-toolbar h2{font-size:16px;font-weight:800;color:var(--slate-900);flex:1}
+#rt-search{border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:7px 11px 7px 32px;font-size:13px;background:var(--slate-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;outline:none;color:var(--slate-800);width:200px}
+#rt-search:focus{border-color:var(--blue);background-color:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+#rt-sort{border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:7px 10px;font-size:12px;background:var(--slate-50);outline:none;color:var(--slate-700);cursor:pointer}
+#del-selected-btn{border:1px solid var(--red);background:var(--red-lt);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:700;color:var(--red-dk);cursor:pointer;display:none;align-items:center;gap:5px;transition:all .15s}
+#del-selected-btn:hover{background:var(--red);color:#fff}
+#del-selected-btn.visible{display:flex}
+.rtable{background:var(--surface);border:1px solid var(--slate-200);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.rt-hdr{display:grid;grid-template-columns:36px 44px 1fr 130px 90px 70px 80px 100px 44px;padding:11px 16px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);font-size:11px;font-weight:700;color:var(--slate-400);text-transform:uppercase;letter-spacing:.5px;align-items:center;gap:4px}
+.rt-row{display:grid;grid-template-columns:36px 44px 1fr 130px 90px 70px 80px 100px 44px;padding:11px 16px;border-bottom:1px solid var(--slate-100);align-items:center;transition:background .1s;gap:4px}
+.rt-row:last-child{border-bottom:none}
+.rt-row:hover{background:var(--slate-50)}
+.rt-row.selected{background:var(--red-lt)}
+.rt-check{width:16px;height:16px;cursor:pointer;accent-color:var(--red)}
+.rt-logo{width:28px;height:28px;border-radius:6px;object-fit:contain;background:var(--slate-100);padding:3px}
+.rt-logo-fallback{width:28px;height:28px;border-radius:6px;background:var(--slate-100);display:flex;align-items:center;justify-content:center;font-size:14px}
+.rt-store{font-weight:700;color:var(--slate-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rt-date{font-size:12px;color:var(--slate-500)}
+.rt-amt{font-weight:700;color:var(--slate-800)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:700}
+.badge.done   {background:var(--green-lt);color:var(--green-dk)}
+.badge.partial{background:var(--blue-lt);color:var(--blue-dk)}
+.badge.pending{background:var(--amber-lt);color:var(--amber-dk)}
+.rt-del-btn{width:28px;height:28px;border-radius:6px;border:1px solid transparent;background:none;color:var(--slate-300);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px}
+.rt-del-btn:hover{background:var(--red-lt);border-color:var(--red);color:var(--red)}
+
+/* ── TIMELINE PAGE ── */
+#timeline-inner{padding:24px;max-width:1100px;margin:0 auto}
+#timeline-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+#timeline-toolbar h2{font-size:16px;font-weight:800;color:var(--slate-900)}
+.tl-controls{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.tl-select{border:1px solid var(--slate-200);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;background:var(--slate-50);outline:none;color:var(--slate-700);cursor:pointer}
+.tl-select:focus{border-color:var(--blue)}
+
+/* Month group */
+.tl-month-group{margin-bottom:28px}
+.tl-month-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--slate-200)}
+.tl-month-label{font-size:15px;font-weight:800;color:var(--slate-900)}
+.tl-month-stats{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}
+.tl-mstat{font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px}
+.tl-mstat.total{background:var(--slate-100);color:var(--slate-700)}
+.tl-mstat.leif {background:var(--blue-lt);color:var(--blue-dk)}
+.tl-mstat.nicole{background:var(--pink-lt);color:var(--pink-dk)}
+.tl-mstat.split{background:var(--green-lt);color:var(--green-dk)}
+.tl-mstat.unass{background:var(--amber-lt);color:var(--amber-dk)}
+
+/* Timeline receipt cards */
+.tl-receipts{display:flex;flex-direction:column;gap:8px}
+.tl-card{background:var(--surface);border:1px solid var(--slate-200);border-radius:var(--radius);box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:all .15s}
+.tl-card:hover{box-shadow:var(--shadow);border-color:var(--slate-300)}
+.tl-card-date{font-size:11px;font-weight:700;color:var(--slate-400);min-width:52px;text-align:center;flex-shrink:0}
+.tl-card-day{font-size:20px;font-weight:900;color:var(--slate-800);line-height:1}
+.tl-card-dow{font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.tl-card-icon{flex-shrink:0}
+.tl-card-info{flex:1;min-width:0}
+.tl-card-store{font-weight:700;font-size:13px;color:var(--slate-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-card-meta{font-size:11px;color:var(--slate-400);margin-top:2px}
+.tl-card-pills{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap}
+.tl-card-amt{font-weight:800;font-size:14px;color:var(--slate-900);flex-shrink:0;min-width:64px;text-align:right}
+.tl-card-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-card-status.done   {background:var(--green)}
+.tl-card-status.partial{background:var(--blue)}
+.tl-card-status.pending{background:var(--amber)}
+
+/* Spending bar in month header */
+.tl-spend-bar{flex:1;height:6px;background:var(--slate-100);border-radius:3px;overflow:hidden;max-width:200px}
+.tl-spend-fill{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--blue-mid),var(--pink))}
+
+/* Empty timeline */
+.tl-empty{text-align:center;padding:80px 20px;color:var(--slate-400)}
+.tl-empty h3{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--slate-600)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--slate-900);color:#fff;padding:11px 22px;border-radius:var(--radius);font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── MODAL ── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+#modal-overlay.open{display:flex}
+#modal{background:var(--surface);border-radius:var(--radius-lg);padding:28px;max-width:460px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.2)}
+#modal h2{font-size:18px;font-weight:800;margin-bottom:8px}
+#modal p{font-size:13px;color:var(--slate-500);line-height:1.6;margin-bottom:20px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.mbtn{border:1px solid var(--slate-200);background:var(--slate-50);border-radius:var(--radius-sm);padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.mbtn:hover{background:var(--slate-100)}
+.mbtn.primary{background:var(--blue-mid);color:#fff;border-color:var(--blue-mid)}
+.mbtn.primary:hover{background:var(--blue-dk)}
+.mbtn.danger{background:var(--red);color:#fff;border-color:var(--red)}
+.mbtn.danger:hover{background:var(--red-dk)}
+
+@media(max-width:640px){
+  #topbar{padding:0 12px;gap:8px}
+  #topbar-nav{gap:0}
+  .nav-btn{padding:6px 8px;font-size:11px;gap:4px}
+  #topbar-actions .tbtn span{display:none}
+  #filter-bar{padding:0 14px}
+  #filter-row1,#filter-row2{gap:6px}
+  #search-input{max-width:100%;width:100%}
+  #receipt-list{padding:12px 14px}
+  .rt-hdr,.rt-row{grid-template-columns:36px 36px 1fr 80px 70px 36px}
+  .rt-hdr>*:nth-child(n+5):not(:nth-child(6)):not(:nth-child(9)),.rt-row>*:nth-child(n+5):not(:nth-child(6)):not(:nth-child(9)){display:none}
+  .tl-card-pills{display:none}
+  .tl-month-stats .tl-mstat:not(.total){display:none}
+}
+</style>
+</head>
+<body>
+<!-- TOPBAR -->
+<div id="topbar">
+<div id="topbar-brand">
+<div id="topbar-logo">💳</div>
+<div>
+<div id="topbar-title">Leif &amp; Nicole</div>
+<div id="topbar-sub">Import your Simplywise export to get started</div>
+</div>
+</div>
+<div id="topbar-nav">
+<button class="nav-btn active" onclick="showPage(&#39;review&#39;,this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>Review
+    </button>
+<button class="nav-btn" onclick="showPage(&#39;dash&#39;,this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Dashboard
+    </button>
+<button class="nav-btn" onclick="showPage(&#39;timeline&#39;,this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>Timeline
+    </button>
+<button class="nav-btn" onclick="showPage(&#39;receipts&#39;,this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><rect height="4" rx="1" width="6" x="9" y="3"></rect></svg>Receipts
+    </button>
+</div>
+<div id="topbar-actions">
+<label class="tbtn primary" title="Import Simplywise Excel export">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
+<span>Import Excel</span>
+<input accept=".xlsx,.xls" id="file-import" style="display:none" type="file">
+</label>
+<button class="tbtn" onclick="saveBackup()" title="Download JSON backup">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg><span>Backup</span>
+</button>
+<label class="tbtn" title="Restore from JSON backup">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg><span>Restore</span>
+<input accept=".json" id="file-restore" style="display:none" type="file">
+</label>
+<button class="tbtn" onclick="exportCSV()" title="Export as CSV">
+<svg fill="currentColor" height="13" viewBox="0 0 20 20" width="13"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg><span>CSV</span>
+</button>
+</div>
+</div>
+<div id="prog-wrap"><div id="prog-fill"></div></div>
+<!-- REVIEW PAGE -->
+<div class="page active" id="page-review">
+<div id="filter-bar">
+<div id="filter-row1">
+<input autocomplete="off" class="f-input" id="search-input" oninput="applyFilters()" placeholder="Search stores, items, descriptions…" type="search">
+<select class="f-input" id="filter-store" onchange="applyFilters()" title="Filter by store"><option value="">🏪 All Stores</option></select>
+<div class="date-range">
+<label>From</label>
+<input class="date-input" id="date-from" onchange="clearPreset();applyFilters()" type="date">
+<label>To</label>
+<input class="date-input" id="date-to" onchange="clearPreset();applyFilters()" type="date">
+</div>
+<div class="preset-row">
+<button class="preset" onclick="setPreset(this,&#39;30d&#39;)">30d</button>
+<button class="preset" onclick="setPreset(this,&#39;90d&#39;)">90d</button>
+<button class="preset" onclick="setPreset(this,&#39;ytd&#39;)">YTD</button>
+<button class="preset active" onclick="setPreset(this,&#39;all&#39;)">All</button>
+</div>
+<button class="clear-btn hidden" id="clear-all-btn" onclick="clearAllFilters()">
+<svg fill="none" height="11" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="11"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>Clear filters
+      </button>
+</div>
+<div id="filter-row2">
+<div class="chip-row">
+<div class="chip active" data-filter="all" onclick="setChip(this,&#39;all&#39;)">All</div>
+<div class="chip leif-chip" data-filter="Leif" onclick="setChip(this,&#39;Leif&#39;)">🔵 Leif</div>
+<div class="chip nicole-chip" data-filter="Nicole" onclick="setChip(this,&#39;Nicole&#39;)">🩷 Nicole</div>
+<div class="chip split-chip" data-filter="Split 50/50" onclick="setChip(this,&#39;Split 50/50&#39;)">🟢 Split</div>
+<div class="chip unass-chip" data-filter="Unassigned" onclick="setChip(this,&#39;Unassigned&#39;)">⚪ Unassigned</div>
+</div>
+<div id="active-tags"></div>
+<div id="filter-stats"></div>
+</div>
+</div>
+<div id="receipt-list"></div>
+</div>
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dash">
+<div id="dash-inner">
+<div class="stat-grid" id="stat-grid"></div>
+<div class="balance-card" id="balance-card"></div>
+<!-- Monthly Spending Chart (full width) -->
+<div class="dash-card" style="margin-bottom:14px">
+<div class="dash-card-title">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M3 9h18M9 21V9"></path></svg>
+        Monthly Spending
+        <div class="dc-actions">
+<button class="dc-tab active" id="chart-tab-bar" onclick="switchChartTab(&#39;bar&#39;)">Bar</button>
+<button class="dc-tab" id="chart-tab-line" onclick="switchChartTab(&#39;line&#39;)">Trend</button>
+<button class="dc-tab" id="chart-tab-balance" onclick="switchChartTab(&#39;balance&#39;)">Balance</button>
+</div>
+</div>
+<div class="chart-wrap" style="height:220px">
+<canvas id="monthly-chart"></canvas>
+</div>
+<div class="chart-legend" id="monthly-legend"></div>
+</div>
+<div class="dash-row">
+<div class="dash-card">
+<div class="dash-card-title">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Assignment Breakdown
+        </div>
+<div id="seg-bar-wrap"></div>
+<div class="legend" id="seg-legend"></div>
+</div>
+<div class="dash-card">
+<div class="dash-card-title">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path><line x1="7" x2="7.01" y1="7" y2="7"></line></svg>Top Categories
+        </div>
+<div id="cat-bars"></div>
+</div>
+</div>
+<div class="dash-card">
+<div class="dash-card-title">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>Top Stores
+      </div>
+<div id="store-bars" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px"></div>
+</div>
+</div>
+</div>
+<!-- TIMELINE PAGE -->
+<div class="page" id="page-timeline">
+<div id="timeline-inner">
+<div id="timeline-toolbar">
+<h2>📅 Receipt Timeline</h2>
+<div class="tl-controls">
+<select class="tl-select" id="tl-year" onchange="renderTimeline()"><option value="">All Years</option></select>
+<select class="tl-select" id="tl-assign" onchange="renderTimeline()">
+<option value="">All Assignments</option>
+<option value="Leif">🔵 Leif</option>
+<option value="Nicole">🩷 Nicole</option>
+<option value="Split 50/50">🟢 Split</option>
+<option value="Unassigned">⚪ Unassigned</option>
+</select>
+<select class="tl-select" id="tl-sort" onchange="renderTimeline()">
+<option value="newest">Newest first</option>
+<option value="oldest">Oldest first</option>
+<option value="highest">Highest spend</option>
+</select>
+</div>
+</div>
+<div id="timeline-body"></div>
+</div>
+</div>
+<!-- RECEIPTS LIST PAGE -->
+<div class="page" id="page-receipts">
+<div id="receipts-inner">
+<div id="receipts-toolbar">
+<h2>All Receipts</h2>
+<input id="rt-search" oninput="renderReceiptsList()" placeholder="Search receipts…" type="search">
+<select id="rt-sort" onchange="renderReceiptsList()">
+<option value="date-desc">Newest first</option>
+<option value="date-asc">Oldest first</option>
+<option value="amt-desc">Highest amount</option>
+<option value="amt-asc">Lowest amount</option>
+<option value="store">Store A–Z</option>
+</select>
+<button id="del-selected-btn" onclick="deleteSelected()">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4h6v2"></path></svg>
+        Delete Selected (<span id="sel-count">0</span>)
+      </button>
+</div>
+<div class="rtable">
+<div class="rt-hdr">
+<div><input id="check-all" onchange="toggleSelectAll(this)" type="checkbox"></div>
+<div>Logo</div>
+<div>Store</div>
+<div>Date</div>
+<div>Total</div>
+<div>Items</div>
+<div>Assigned</div>
+<div>Status</div>
+<div></div>
+</div>
+<div id="rt-body"></div>
+</div>
+</div>
+</div>
+<div id="toast"></div>
+<div id="modal-overlay">
+<div id="modal">
+<h2 id="modal-title"></h2>
+<p id="modal-body"></p>
+<div class="modal-btns" id="modal-btns"></div>
+</div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// STORE LOGOS
+// ═══════════════════════════════════════════════════════════════
+const STORE_META = {
+  'Safeway':           { domain:'safeway.com',          emoji:'🛒' },
+  'Safeway Pharmacy':  { domain:'safeway.com',          emoji:'💊' },
+  'Target':            { domain:'target.com',           emoji:'🎯' },
+  'Fred Meyer':        { domain:'fredmeyer.com',        emoji:'🛍️' },
+  "Trader Joe's":      { domain:'traderjoes.com',       emoji:'🌿' },
+  'Costco':            { domain:'costco.com',           emoji:'📦' },
+  'Home Goods':        { domain:'homegoods.com',        emoji:'🏠' },
+  'HomeGoods':         { domain:'homegoods.com',        emoji:'🏠' },
+  'Whole Foods':       { domain:'wholefoodsmarket.com', emoji:'🥦' },
+  'Joann':             { domain:'joann.com',            emoji:'🧵' },
+  'QFC':               { domain:'qfc.com',              emoji:'🛒' },
+  'Value Village':     { domain:'valuevillage.com',     emoji:'♻️' },
+  'Nordstrom':         { domain:'nordstrom.com',        emoji:'👗' },
+  'Amazon':            { domain:'amazon.com',           emoji:'📦' },
+  'Walmart':           { domain:'walmart.com',          emoji:'🏪' },
+  'CVS':               { domain:'cvs.com',              emoji:'💊' },
+  'Walgreens':         { domain:'walgreens.com',        emoji:'💊' },
+  'Starbucks':         { domain:'starbucks.com',        emoji:'☕' },
+  "McDonald's":        { domain:'mcdonalds.com',        emoji:'🍔' },
+  'Home Depot':        { domain:'homedepot.com',        emoji:'🔨' },
+  "Lowe's":            { domain:'lowes.com',            emoji:'🔧' },
+  'Best Buy':          { domain:'bestbuy.com',          emoji:'📺' },
+};
+function getStoreMeta(name) {
+  if (!name) return null;
+  if (STORE_META[name]) return STORE_META[name];
+  const lower = name.toLowerCase();
+  for (const [k,v] of Object.entries(STORE_META)) {
+    if (lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower)) return v;
+  }
+  return null;
+}
+function logoUrl(domain) { return `https://logo.clearbit.com/${domain}?size=64`; }
+function logoImg(storeName, cls='rc-icon') {
+  const meta = getStoreMeta(storeName);
+  if (meta && meta.domain) {
+    const fb = (meta.emoji||'🏪').replace(/'/g,"\\'");
+    return `<div class="${cls}" style="background:#fff;border:1px solid var(--slate-200)"><img src="${logoUrl(meta.domain)}" alt="${esc(storeName)}" onerror="this.parentElement.innerHTML='${fb}';this.parentElement.classList.add('fallback');this.parentElement.style.background='';this.parentElement.style.border='';" style="width:100%;height:100%;object-fit:contain;padding:4px;border-radius:8px"/></div>`;
+  }
+  return `<div class="${cls} fallback">${meta?.emoji||storeEmoji(storeName)}</div>`;
+}
+function storeEmoji(s) {
+  const l=(s||'').toLowerCase();
+  if(l.includes('pharmacy')||l.includes('drug'))return'💊';
+  if(l.includes('grocery')||l.includes('market')||l.includes('food'))return'🛒';
+  if(l.includes('coffee')||l.includes('cafe'))return'☕';
+  if(l.includes('restaurant')||l.includes('grill')||l.includes('kitchen'))return'🍽️';
+  if(l.includes('gas')||l.includes('fuel'))return'⛽';
+  if(l.includes('clothing')||l.includes('fashion')||l.includes('apparel'))return'👗';
+  return'🏪';
+}
+function smallLogoImg(storeName) {
+  const meta = getStoreMeta(storeName);
+  if (meta && meta.domain) {
+    const emoji = meta.emoji||'🏪';
+    return `<img class="rt-logo" src="${logoUrl(meta.domain)}" alt="${esc(storeName)}" onerror="this.outerHTML='<div class=\\'rt-logo-fallback\\'>${emoji}</div>'"/>`;
+  }
+  return `<div class="rt-logo-fallback">${meta?.emoji||storeEmoji(storeName)}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const STORE_KEY = 'expense_v2';
+let ITEMS = [];
+let openReceipts = new Set();
+let selectedReceipts = new Set();
+let currentChartTab = 'bar';
+let chartInstance = null;
+
+const F = { q:'', store:'', assignment:'all', dateFrom:null, dateTo:null, preset:'all' };
+const LEIF_CARDS   = new Set(['6364','2282','3637']);
+const NICOLE_CARDS = new Set(['9897','7065','3795','7567']);
+
+function cardOwner(payment) {
+  if (!payment) return null;
+  const m = String(payment).match(/\d{4}/g);
+  if (!m) return null;
+  const last4 = m[m.length-1];
+  if (LEIF_CARDS.has(last4)) return 'Leif';
+  if (NICOLE_CARDS.has(last4)) return 'Nicole';
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════════════════════
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(ITEMS)); } catch(e){} }
+function load() {
+  try { const d=localStorage.getItem(STORE_KEY); if(d){ITEMS=JSON.parse(d);return true;} } catch(e){}
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════════════════════════
+function parseItemDate(str) {
+  if (!str) return null;
+  const m = String(str).match(/^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})$/);
+  if (!m) return null;
+  return new Date(`${m[1]} ${m[2]}, ${m[3]} 12:00:00`);
+}
+function toInputDate(d) { return d ? d.toISOString().slice(0,10) : ''; }
+function fromInputDate(s) {
+  if (!s) return null;
+  const [y,mo,d]=s.split('-').map(Number);
+  return new Date(y,mo-1,d,12,0,0);
+}
+function monthKey(dateStr) {
+  const d = parseItemDate(dateStr);
+  if (!d) return null;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function monthLabel(key) {
+  if (!key) return '';
+  const [y,m] = key.split('-');
+  return new Date(+y, +m-1, 1).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+}
+function dayOfWeek(dateStr) {
+  const d = parseItemDate(dateStr);
+  if (!d) return '';
+  return d.toLocaleDateString('en-US',{weekday:'short'});
+}
+function dayNum(dateStr) {
+  const d = parseItemDate(dateStr);
+  if (!d) return '';
+  return d.getDate();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIMPLYWISE PARSER
+// ═══════════════════════════════════════════════════════════════
+function isSummaryDate(val) {
+  if (!val) return false;
+  const s=String(val).trim();
+  if (/^\d{4}\s*$/.test(s)) return true;
+  if (/^[A-Za-z]+\s+\d{4}$/.test(s)) return true;
+  return false;
+}
+function isReceiptDate(val) {
+  if (!val) return false;
+  return /^[A-Za-z]+\s+\d{1,2},\s+\d{4}$/.test(String(val).trim());
+}
+function parseSimplywiseWorkbook(wb) {
+  const allItems=[]; let receiptCounter=0;
+  for (const sheetName of wb.SheetNames) {
+    const ws=wb.Sheets[sheetName];
+    // Use header:'A' so each row is an object keyed by column letter (B, C, F, G, H).
+    // This is immune to the sheet's starting column — Simplywise exports start at col B,
+    // so header:1 (index-based) would shift all indices by -1 and break the parser.
+    const rows=XLSX.utils.sheet_to_json(ws,{header:'A',defval:null,raw:true});
+    let currentReceipt=null;
+    for (const row of rows) {
+      const colB=row['B'], colC=row['C'], colF=row['F'], colG=row['G'], colH=row['H'];
+      // Skip yearly/monthly summary rows (e.g. "2024", "Nov 2024")
+      if (isSummaryDate(colB)) continue;
+      // Skip label/header rows that aren't receipt dates and have no line item data
+      if (colB && !isReceiptDate(colB) && !colG && !colH) continue;
+      // Skip the "Documents" section label
+      if (String(colB||'').trim()==='Documents') continue;
+      // Skip "Difference" rows (Simplywise balance rows)
+      if (String(colG||'').toLowerCase().trim()==='difference') continue;
+      // Skip the column header row ("Date", "Merchant", etc.)
+      if (String(colB||'').trim()==='Date') continue;
+      // ── Receipt row: has a date in col B and a merchant in col C ──────────
+      if (isReceiptDate(colB) && colC) {
+        receiptCounter++;
+        currentReceipt={
+          id:`R${String(receiptCounter).padStart(4,'0')}`,
+          date:String(colB).trim(), store:String(colC).trim(),
+          payment:String(colF||'').trim(),
+          recTotal:parseFloat(String(colH||'0').replace(/[$,]/g,''))||0,
+        };
+        continue;
+      }
+      // ── Line item row: has a description in col G and a price in col H ────
+      if (colG && colH!==null && colH!=='') {
+        const amount=parseFloat(String(colH).replace(/[$,]/g,''));
+        if (isNaN(amount)) continue;
+        // Keep negative amounts (refunds/discounts) — skip only zero
+        if (amount===0) continue;
+        if (!currentReceipt) continue;
+        const owner=cardOwner(currentReceipt.payment)||'Unassigned';
+        allItems.push({
+          id:allItems.length, date:currentReceipt.date, store:currentReceipt.store,
+          cat:sheetName==='All Documents'?'':sheetName,
+          desc:String(colG).trim(), amount, assignment:owner,
+          receiptId:currentReceipt.id, recTotal:currentReceipt.recTotal,
+          payment:currentReceipt.payment,
+        });
+      }
+    }
+  }
+  return allItems;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IMPORT
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('file-import').addEventListener('change', function(e) {
+  const file=e.target.files[0]; if(!file) return;
+  if (typeof XLSX==='undefined') { alert('❌ xlsx.min.js not found.'); return; }
+  showToast('📂 Reading '+file.name+'…');
+  const reader=new FileReader();
+  reader.onerror=()=>showToast('❌ Could not read file');
+  reader.onload=function(ev) {
+    try {
+      const wb=XLSX.read(ev.target.result,{type:'array',cellDates:false});
+      const newItems=parseSimplywiseWorkbook(wb);
+      if (!newItems.length) { showToast('⚠️ No line items found'); return; }
+      const existing=new Set(ITEMS.map(i=>`${i.date}|${i.store}|${i.desc}|${i.amount}`));
+      let added=0,dupes=0,auto=0;
+      const maxRec=ITEMS.reduce((m,i)=>Math.max(m,parseInt((i.receiptId||'R0').replace('R',''))),0);
+      for (const item of newItems) {
+        const key=`${item.date}|${item.store}|${item.desc}|${item.amount}`;
+        if (existing.has(key)){dupes++;continue;}
+        existing.add(key);
+        const rn=parseInt(item.receiptId.replace('R',''))+maxRec;
+        item.receiptId=`R${String(rn).padStart(4,'0')}`;
+        item.id=ITEMS.length+added;
+        if (item.assignment!=='Unassigned') auto++;
+        ITEMS.push(item); added++;
+      }
+      ITEMS.forEach((item,i)=>item.id=i);
+      save(); renderAll();
+      showToast(`✅ ${added} items imported · ${auto} auto-assigned · ${dupes} duplicates skipped`);
+    } catch(err) { console.error(err); showToast('❌ Import failed: '+err.message); }
+  };
+  reader.readAsArrayBuffer(file);
+  e.target.value='';
+});
+
+// ═══════════════════════════════════════════════════════════════
+// DELETE RECEIPTS
+// ═══════════════════════════════════════════════════════════════
+function deleteReceipt(receiptId, skipConfirm=false) {
+  const count = ITEMS.filter(i=>i.receiptId===receiptId).length;
+  const doDelete = () => {
+    ITEMS = ITEMS.filter(i=>i.receiptId!==receiptId);
+    ITEMS.forEach((item,i)=>item.id=i);
+    openReceipts.delete(receiptId);
+    selectedReceipts.delete(receiptId);
+    save(); renderAll(); renderReceiptsList();
+    showToast(`🗑️ Receipt deleted (${count} items removed)`);
+  };
+  if (skipConfirm) { doDelete(); return; }
+  showModal('Delete Receipt',
+    `Remove this receipt and its ${count} line item${count!==1?'s':''}? This cannot be undone.`,
+    [{label:'Cancel',cls:''},{label:'Delete',cls:'danger',action:doDelete}]);
+}
+function deleteSelected() {
+  const ids = [...selectedReceipts];
+  if (!ids.length) return;
+  const itemCount = ITEMS.filter(i=>ids.includes(i.receiptId)).length;
+  showModal('Delete Selected Receipts',
+    `Delete ${ids.length} receipt${ids.length!==1?'s':''} and ${itemCount} line item${itemCount!==1?'s':''}? This cannot be undone.`,
+    [{label:'Cancel',cls:''},{label:`Delete ${ids.length}`,cls:'danger',action:()=>{
+      ITEMS = ITEMS.filter(i=>!ids.includes(i.receiptId));
+      ITEMS.forEach((item,i)=>item.id=i);
+      ids.forEach(id=>{openReceipts.delete(id);selectedReceipts.delete(id);});
+      save(); renderAll(); renderReceiptsList();
+      showToast(`🗑️ ${ids.length} receipts deleted`);
+    }}]);
+}
+function toggleSelectAll(cb) {
+  const rows = document.querySelectorAll('.rt-check-row');
+  rows.forEach(r => {
+    r.checked = cb.checked;
+    const rid = r.dataset.rid;
+    if (cb.checked) selectedReceipts.add(rid);
+    else selectedReceipts.delete(rid);
+    r.closest('.rt-row').classList.toggle('selected', cb.checked);
+  });
+  updateDelSelectedBtn();
+}
+function toggleRowSelect(cb, rid) {
+  if (cb.checked) selectedReceipts.add(rid);
+  else selectedReceipts.delete(rid);
+  cb.closest('.rt-row').classList.toggle('selected', cb.checked);
+  updateDelSelectedBtn();
+}
+function updateDelSelectedBtn() {
+  const btn = document.getElementById('del-selected-btn');
+  const n = selectedReceipts.size;
+  document.getElementById('sel-count').textContent = n;
+  btn.classList.toggle('visible', n > 0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BACKUP / RESTORE / EXPORT
+// ═══════════════════════════════════════════════════════════════
+function saveBackup() {
+  if (!ITEMS.length) { showToast('No data to backup'); return; }
+  const blob=new Blob([JSON.stringify({v:2,items:ITEMS},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`expense-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  showToast('✅ Backup downloaded');
+}
+document.getElementById('file-restore').addEventListener('change', function(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev) {
+    try {
+      const data=JSON.parse(ev.target.result);
+      const items=data.items||data;
+      if (!Array.isArray(items)) throw new Error('Invalid format');
+      showModal('Restore Backup',`Replace all current data with ${items.length} items from backup?`,
+        [{label:'Cancel',cls:''},{label:'Restore',cls:'primary',action:()=>{
+          ITEMS=items; ITEMS.forEach((x,i)=>x.id=i); save(); renderAll();
+          showToast(`✅ Restored ${items.length} items`);
+        }}]);
+    } catch(err) { showToast('❌ Restore failed: '+err.message); }
+  };
+  reader.readAsText(file); e.target.value='';
+});
+function exportCSV() {
+  if (!ITEMS.length) { showToast('No data to export'); return; }
+  const rows=[['Date','Store','Category','Description','Amount','Assignment','Receipt ID','Payment']];
+  ITEMS.forEach(i=>rows.push([i.date,i.store,i.cat,i.desc,i.amount,i.assignment,i.receiptId,i.payment]));
+  const csv=rows.map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`expenses-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  showToast('✅ CSV exported');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ASSIGNMENT
+// ═══════════════════════════════════════════════════════════════
+function assign(id, val) { ITEMS[id].assignment=val; save(); renderReview(); updateProgress(); updateSub(); }
+function bulkAssign(rid, val) { ITEMS.filter(i=>i.receiptId===rid).forEach(i=>i.assignment=val); save(); renderReview(); updateProgress(); updateSub(); }
+
+// ── Inline editing ────────────────────────────────────────────────────────
+function editReceiptName(rid, evt) {
+  evt.stopPropagation();
+  const el = document.querySelector(`#rc-${rid} .rc-store`);
+  if (!el || el.querySelector('input')) return;
+  const cur = ITEMS.filter(i=>i.receiptId===rid)[0]?.store || '';
+  el.innerHTML = `<input class="edit-input" value="${esc(cur)}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()" onblur="saveReceiptName('${rid}',this.value)" style="width:100%;font:inherit;border:1px solid var(--blue-400);border-radius:4px;padding:2px 6px;outline:none;background:#fff;color:#1e293b"/>`;
+  el.querySelector('input').focus();
+  el.querySelector('input').select();
+}
+function saveReceiptName(rid, val) {
+  val = val.trim();
+  if (!val) { renderReview(); return; }
+  ITEMS.filter(i=>i.receiptId===rid).forEach(i=>i.store=val);
+  save(); renderReview();
+  showToast('✏️ Receipt name updated');
+}
+
+function editItemDesc(id, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('li-desc-'+id);
+  if (!el || el.querySelector('input')) return;
+  const cur = ITEMS[id]?.desc || '';
+  el.innerHTML = `<input class="edit-input" value="${esc(cur)}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()" onblur="saveItemDesc(${id},this.value)" style="width:100%;font:inherit;border:1px solid var(--blue-400);border-radius:4px;padding:2px 6px;outline:none;background:#fff;color:#1e293b"/>`;
+  el.querySelector('input').focus();
+  el.querySelector('input').select();
+}
+function saveItemDesc(id, val) {
+  val = val.trim();
+  if (!val) { renderReview(); return; }
+  ITEMS[id].desc = val;
+  save(); renderReview();
+  showToast('✏️ Item name updated');
+}
+
+function editItemAmt(id, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('li-amt-'+id);
+  if (!el || el.querySelector('input')) return;
+  const cur = ITEMS[id]?.amount ?? '';
+  el.innerHTML = `<input class="edit-input" type="number" step="0.01" value="${cur}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()" onblur="saveItemAmt(${id},this.value)" style="width:72px;font:inherit;border:1px solid var(--blue-400);border-radius:4px;padding:2px 6px;outline:none;background:#fff;color:#1e293b;text-align:right"/>`;
+  el.querySelector('input').focus();
+  el.querySelector('input').select();
+}
+function saveItemAmt(id, val) {
+  const n = parseFloat(val);
+  if (isNaN(n)) { renderReview(); return; }
+  ITEMS[id].amount = n;
+  save(); renderReview(); updateProgress(); updateSub();
+  showToast('✏️ Item amount updated');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FILTER LOGIC
+// ═══════════════════════════════════════════════════════════════
+function setChip(el, f) {
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); F.assignment=f; applyFilters();
+}
+function setPreset(el, p) {
+  document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); F.preset=p;
+  const now=new Date(); let from=null,to=null;
+  if (p==='30d'){from=new Date(now);from.setDate(from.getDate()-30);to=now;}
+  else if (p==='90d'){from=new Date(now);from.setDate(from.getDate()-90);to=now;}
+  else if (p==='ytd'){from=new Date(now.getFullYear(),0,1,12);to=now;}
+  F.dateFrom=from; F.dateTo=to;
+  document.getElementById('date-from').value=from?toInputDate(from):'';
+  document.getElementById('date-to').value=to?toInputDate(to):'';
+  applyFilters();
+}
+function clearPreset() { F.preset=''; document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active')); }
+function clearAllFilters() {
+  F.q='';F.store='';F.assignment='all';F.dateFrom=null;F.dateTo=null;F.preset='all';
+  document.getElementById('search-input').value='';
+  document.getElementById('filter-store').value='';
+  document.getElementById('date-from').value='';
+  document.getElementById('date-to').value='';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('.chip[data-filter="all"]').classList.add('active');
+  document.querySelectorAll('.preset').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.preset[onclick*="\'all\'"]').classList.add('active');
+  applyFilters();
+}
+function applyFilters() {
+  F.q=document.getElementById('search-input').value.trim().toLowerCase();
+  F.store=document.getElementById('filter-store').value;
+  const df=document.getElementById('date-from').value;
+  const dt=document.getElementById('date-to').value;
+  if (df) F.dateFrom=fromInputDate(df);
+  if (dt) F.dateTo=fromInputDate(dt);
+  if (!df) F.dateFrom=null;
+  if (!dt) F.dateTo=null;
+  updateActiveTags(); updateClearBtn(); renderReview();
+}
+function isFiltered() { return F.q||F.store||F.assignment!=='all'||F.dateFrom||F.dateTo; }
+function updateClearBtn() { document.getElementById('clear-all-btn').classList.toggle('hidden',!isFiltered()); }
+function updateActiveTags() {
+  const tags=[];
+  if (F.q) tags.push({label:`"${F.q}"`,clear:()=>{F.q='';document.getElementById('search-input').value='';applyFilters();}});
+  if (F.store) tags.push({label:`🏪 ${F.store}`,clear:()=>{F.store='';document.getElementById('filter-store').value='';applyFilters();}});
+  if (F.assignment!=='all') {
+    const icons={Leif:'🔵',Nicole:'🩷','Split 50/50':'🟢',Unassigned:'⚪'};
+    tags.push({label:`${icons[F.assignment]||''} ${F.assignment}`,clear:()=>{
+      F.assignment='all';
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      document.querySelector('.chip[data-filter="all"]').classList.add('active');
+      applyFilters();
+    }});
+  }
+  if (F.dateFrom||F.dateTo) {
+    const from=F.dateFrom?toInputDate(F.dateFrom):'…';
+    const to=F.dateTo?toInputDate(F.dateTo):'…';
+    tags.push({label:`📅 ${from} → ${to}`,clear:()=>{
+      F.dateFrom=null;F.dateTo=null;
+      document.getElementById('date-from').value='';
+      document.getElementById('date-to').value='';
+      clearPreset(); applyFilters();
+    }});
+  }
+  document.getElementById('active-tags').innerHTML=tags.map((t,i)=>
+    `<span class="atag">${esc(t.label)}<span class="atag-x" onclick="window._tags[${i}].clear()">✕</span></span>`
+  ).join('');
+  window._tags=tags;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GROUPING
+// ═══════════════════════════════════════════════════════════════
+function groupByReceipt(items) {
+  const map=new Map();
+  for (const item of items) {
+    if (!map.has(item.receiptId)) map.set(item.receiptId,{receiptId:item.receiptId,store:item.store,date:item.date,recTotal:item.recTotal,payment:item.payment,items:[]});
+    map.get(item.receiptId).items.push(item);
+  }
+  return [...map.values()];
+}
+function receiptMatchesFilters(r) {
+  if (F.store && r.store!==F.store) return false;
+  if (F.dateFrom||F.dateTo) {
+    const d=parseItemDate(r.date);
+    if (d) { if (F.dateFrom&&d<F.dateFrom) return false; if (F.dateTo&&d>F.dateTo) return false; }
+  }
+  if (F.q) {
+    const storeMatch=r.store.toLowerCase().includes(F.q);
+    const itemMatch=r.items.some(i=>i.desc.toLowerCase().includes(F.q));
+    if (!storeMatch&&!itemMatch) return false;
+  }
+  if (F.assignment!=='all' && !r.items.some(i=>i.assignment===F.assignment)) return false;
+  return true;
+}
+function getFilteredReceipts() { return groupByReceipt(ITEMS).filter(receiptMatchesFilters); }
+function populateDropdowns() {
+  const stores=[...new Set(ITEMS.map(i=>i.store).filter(Boolean))].sort();
+  const se=document.getElementById('filter-store'),sv=se.value;
+  se.innerHTML='<option value="">🏪 All Stores</option>'+stores.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  se.value=sv;
+  // Timeline year dropdown
+  const years=[...new Set(ITEMS.map(i=>{const d=parseItemDate(i.date);return d?d.getFullYear():null}).filter(Boolean))].sort((a,b)=>b-a);
+  const ye=document.getElementById('tl-year'),yv=ye.value;
+  ye.innerHTML='<option value="">All Years</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  ye.value=yv;
+}
+function highlight(text, q) {
+  if (!q) return esc(text);
+  const safe=esc(text);
+  const safeQ=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return safe.replace(new RegExp(`(${safeQ})`,'gi'),'<mark class="match-hl">$1</mark>');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MONTHLY DATA HELPER
+// ═══════════════════════════════════════════════════════════════
+function buildMonthlyData() {
+  const map = new Map();
+  for (const item of ITEMS) {
+    const k = monthKey(item.date);
+    if (!k) continue;
+    if (!map.has(k)) map.set(k,{leif:0,nicole:0,split:0,unassigned:0,total:0});
+    const m = map.get(k);
+    m.total += item.amount;
+    if (item.assignment==='Leif') m.leif += item.amount;
+    else if (item.assignment==='Nicole') m.nicole += item.amount;
+    else if (item.assignment==='Split 50/50') m.split += item.amount;
+    else m.unassigned += item.amount;
+  }
+  return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MINI CHART ENGINE (no external library)
+// ═══════════════════════════════════════════════════════════════
+function drawChart(canvasId, type, labels, datasets, opts={}) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const wrap = canvas.parentElement;
+  const W = wrap.clientWidth || 600;
+  const H = wrap.clientHeight || 220;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width = W+'px';
+  canvas.style.height = H+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.clearRect(0,0,W,H);
+
+  const PAD = {top:16, right:16, bottom:40, left:58};
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  // Compute max value
+  let maxVal = 0;
+  for (let i=0;i<labels.length;i++) {
+    let sum = 0;
+    datasets.forEach(ds => { sum += (ds.stack ? (ds.data[i]||0) : 0); });
+    const lineMax = datasets.filter(ds=>!ds.stack).reduce((m,ds)=>Math.max(m,ds.data[i]||0),0);
+    maxVal = Math.max(maxVal, sum, lineMax);
+  }
+  if (maxVal===0) maxVal=1;
+  const niceMax = Math.ceil(maxVal/100)*100;
+
+  // Grid lines
+  const gridCount = 4;
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3,3]);
+  for (let g=0;g<=gridCount;g++) {
+    const y = PAD.top + cH - (g/gridCount)*cH;
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cW,y); ctx.stroke();
+    ctx.fillStyle='#94a3b8'; ctx.font=`${10*devicePixelRatio/devicePixelRatio}px -apple-system,sans-serif`;
+    ctx.textAlign='right'; ctx.fillText('$'+Math.round(niceMax*g/gridCount).toLocaleString(), PAD.left-6, y+4);
+  }
+  ctx.setLineDash([]);
+
+  const n = labels.length;
+  const barW = Math.max(8, Math.min(40, cW/n*0.6));
+  const barGap = cW/n;
+
+  // Draw stacked bars
+  const stackDatasets = datasets.filter(ds=>ds.stack);
+  if (stackDatasets.length && type!=='line') {
+    for (let i=0;i<n;i++) {
+      let yOff = 0;
+      const x = PAD.left + i*barGap + barGap/2 - barW/2;
+      for (const ds of stackDatasets) {
+        const val = ds.data[i]||0;
+        const bH = (val/niceMax)*cH;
+        const y = PAD.top + cH - yOff - bH;
+        ctx.fillStyle = ds.color;
+        const r = 3;
+        ctx.beginPath();
+        ctx.moveTo(x+r,y); ctx.lineTo(x+barW-r,y);
+        ctx.quadraticCurveTo(x+barW,y,x+barW,y+r);
+        ctx.lineTo(x+barW,y+bH); ctx.lineTo(x,y+bH);
+        ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+        ctx.closePath(); ctx.fill();
+        yOff += bH;
+      }
+    }
+  }
+
+  // Draw line datasets
+  const lineDatasets = datasets.filter(ds=>!ds.stack);
+  for (const ds of lineDatasets) {
+    ctx.strokeStyle = ds.color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    let started = false;
+    for (let i=0;i<n;i++) {
+      const val = ds.data[i]||0;
+      const x = PAD.left + i*barGap + barGap/2;
+      const y = PAD.top + cH - (val/niceMax)*cH;
+      if (!started) { ctx.moveTo(x,y); started=true; }
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // Dots
+    for (let i=0;i<n;i++) {
+      const val = ds.data[i]||0;
+      const x = PAD.left + i*barGap + barGap/2;
+      const y = PAD.top + cH - (val/niceMax)*cH;
+      ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2);
+      ctx.fillStyle = ds.color; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+  }
+
+  // X-axis labels
+  ctx.fillStyle='#94a3b8'; ctx.font=`10px -apple-system,sans-serif`; ctx.textAlign='center';
+  const step = Math.max(1, Math.ceil(n/10));
+  for (let i=0;i<n;i+=step) {
+    const x = PAD.left + i*barGap + barGap/2;
+    ctx.fillText(labels[i], x, PAD.top+cH+16);
+  }
+}
+
+function switchChartTab(tab) {
+  currentChartTab = tab;
+  document.querySelectorAll('.dc-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('chart-tab-'+tab).classList.add('active');
+  renderMonthlyChart();
+}
+
+function renderMonthlyChart() {
+  const monthly = buildMonthlyData();
+  if (!monthly.length) {
+    document.getElementById('monthly-legend').innerHTML='<span style="color:var(--slate-400);font-size:12px">No data yet</span>';
+    return;
+  }
+  const labels = monthly.map(([k])=>monthLabel(k).replace(' ','\n'));
+  const leifData   = monthly.map(([,v])=>v.leif);
+  const nicoleData = monthly.map(([,v])=>v.nicole);
+  const splitData  = monthly.map(([,v])=>v.split);
+  const unassData  = monthly.map(([,v])=>v.unassigned);
+  const totalData  = monthly.map(([,v])=>v.total);
+
+  // Running net balance (Leif - Nicole, including half of split)
+  let cumLeif=0, cumNicole=0;
+  const balData = monthly.map(([,v])=>{
+    cumLeif   += v.leif + v.split/2;
+    cumNicole += v.nicole + v.split/2;
+    return cumLeif - cumNicole;
+  });
+
+  let datasets = [];
+  let legendItems = [];
+
+  if (currentChartTab==='bar') {
+    datasets = [
+      {stack:true, color:'#2563eb', data:leifData,   label:'Leif'},
+      {stack:true, color:'#ec4899', data:nicoleData, label:'Nicole'},
+      {stack:true, color:'#10b981', data:splitData,  label:'Split'},
+      {stack:true, color:'#f59e0b', data:unassData,  label:'Unassigned'},
+    ];
+    legendItems = [['#2563eb','Leif'],['#ec4899','Nicole'],['#10b981','Split'],['#f59e0b','Unassigned']];
+  } else if (currentChartTab==='line') {
+    datasets = [
+      {stack:false, color:'#2563eb', data:leifData,   label:'Leif'},
+      {stack:false, color:'#ec4899', data:nicoleData, label:'Nicole'},
+      {stack:false, color:'#10b981', data:splitData,  label:'Split'},
+    ];
+    legendItems = [['#2563eb','Leif'],['#ec4899','Nicole'],['#10b981','Split']];
+  } else {
+    // Balance chart — positive = Nicole owes Leif, negative = Leif owes Nicole
+    const posData = balData.map(v=>Math.max(0,v));
+    const negData = balData.map(v=>Math.abs(Math.min(0,v)));
+    datasets = [
+      {stack:true, color:'#2563eb', data:posData, label:'Nicole owes Leif'},
+      {stack:true, color:'#ec4899', data:negData, label:'Leif owes Nicole'},
+    ];
+    legendItems = [['#2563eb','Nicole owes Leif'],['#ec4899','Leif owes Nicole']];
+  }
+
+  drawChart('monthly-chart', currentChartTab, labels, datasets);
+  document.getElementById('monthly-legend').innerHTML = legendItems.map(([c,l])=>
+    `<div class="chart-legend-item"><div class="chart-legend-dot" style="background:${c}"></div>${l}</div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER — REVIEW
+// ═══════════════════════════════════════════════════════════════
+function renderReview() {
+  const list=document.getElementById('receipt-list');
+  if (!ITEMS.length) {
+    list.innerHTML=`<div id="empty-state"><div class="empty-icon">🧾</div><h2>No receipts yet</h2><p>Import your Simplywise Full Report Excel export. All data saves locally in your browser.</p><button class="big-btn" onclick="document.getElementById('file-import').click()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>Import Excel</button></div>`;
+    document.getElementById('filter-stats').textContent=''; return;
+  }
+  const receipts=getFilteredReceipts();
+  const total=groupByReceipt(ITEMS).length;
+  const matchedItems=receipts.reduce((s,r)=>s+r.items.length,0);
+  document.getElementById('filter-stats').innerHTML=`<strong>${receipts.length}</strong> of ${total} receipts · <strong>${matchedItems}</strong> items`;
+  if (!receipts.length) {
+    list.innerHTML=`<div id="no-results"><h3>No receipts match your filters</h3><p>Try adjusting your search, date range, or assignment filter.</p><button class="clear-btn" onclick="clearAllFilters()" style="margin:0 auto"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Clear all filters</button></div>`;
+    return;
+  }
+  list.innerHTML=receipts.map(r=>{
+    const total=r.recTotal||r.items.reduce((s,i)=>s+i.amount,0);
+    const counts={Leif:0,Nicole:0,'Split 50/50':0,Unassigned:0};
+    r.items.forEach(i=>counts[i.assignment]=(counts[i.assignment]||0)+1);
+    const hasItemMatch=F.q&&r.items.some(i=>i.desc.toLowerCase().includes(F.q));
+    if (hasItemMatch) openReceipts.add(r.receiptId);
+    const isOpen=openReceipts.has(r.receiptId);
+    const pills=Object.entries(counts).filter(([,n])=>n>0).map(([k,n])=>{
+      const cls=k==='Split 50/50'?'split':k.toLowerCase();
+      return `<span class="rc-pill ${cls}">${k==='Split 50/50'?'Split':k} ${n}</span>`;
+    }).join('');
+    const itemsHtml=r.items.map(item=>{
+      const a=item.assignment;
+      const isMatch=F.q&&item.desc.toLowerCase().includes(F.q);
+      return `<div class=\"line-item${isMatch?\' item-match\':\'\'}\">\
+        <div class=\"li-info\"><div class=\"li-desc\" id=\"li-desc-${item.id}\" title=\"${esc(item.desc)}\">${highlight(item.desc,F.q)}</div>${item.cat?`<div class=\"li-cat\">${esc(item.cat)}</div>`:''}</div>\
+        <div class=\"li-amt\" id=\"li-amt-${item.id}\">$${item.amount.toFixed(2)}</div>\
+        <div class=\"li-btns\">\
+          <button class=\"lbtn edit-btn\" onclick=\"editItemDesc(${item.id},event)\" title=\"Edit description\">✏️</button>\
+          <button class=\"lbtn edit-btn\" onclick=\"editItemAmt(${item.id},event)\" title=\"Edit amount\">$</button>\
+          <button class=\"lbtn${a===\'Leif\'?\' al\':\'\'}\" onclick=\"assign(${item.id},\'Leif\')\">L</button>\
+          <button class=\"lbtn${a===\'Nicole\'?\' an\':\'\'}\" onclick=\"assign(${item.id},\'Nicole\')\">N</button>\
+          <button class=\"lbtn${a===\'Split 50/50\'?\' as\':\'\'}\" onclick=\"assign(${item.id},\'Split 50/50\')\">S</button>\
+          ${a!==\'Unassigned\'?`<button class=\"lbtn clr\" onclick=\"assign(${item.id},\'Unassigned\')\" title=\"Clear\">✕</button>`:''}\
+        </div>\
+      </div>`;\
+    }).join('');
+    return `<div class="receipt-card${isOpen?' open':''}" id="rc-${r.receiptId}">
+      <div class="receipt-header" onclick="toggleReceipt('${r.receiptId}')">
+        <span class="rc-chevron">▶</span>
+        ${logoImg(r.store)}
+        <div class="rc-info">
+          <div class="rc-store">${highlight(r.store||'Unknown',F.q)}<button class=\"edit-btn\" onclick=\"editReceiptName(\\'${r.receiptId}\\',event)\" title=\"Edit name\">✏️</button></div>
+          <div class="rc-meta">${esc(r.date||'')} · ${r.receiptId} · ${r.items.length} items${r.payment?' · '+esc(r.payment):''}</div>
+        </div>
+        <div class="rc-pills">${pills}</div>
+        <div class="rc-total">$${total.toFixed(2)}</div>
+        <button class="rc-delete" onclick="event.stopPropagation();deleteReceipt('${r.receiptId}')" title="Delete receipt">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+      <div class="receipt-bulk">
+        <span class="bulk-label">Assign all:</span>
+        <button class="bbtn leif"   onclick="bulkAssign('${r.receiptId}','Leif')">🔵 Leif</button>
+        <button class="bbtn nicole" onclick="bulkAssign('${r.receiptId}','Nicole')">🩷 Nicole</button>
+        <button class="bbtn split"  onclick="bulkAssign('${r.receiptId}','Split 50/50')">🟢 Split</button>
+        <button class="bbtn clear"  onclick="bulkAssign('${r.receiptId}','Unassigned')">✕ Clear</button>
+        <button class="bbtn del"    onclick="deleteReceipt('${r.receiptId}')">🗑️ Delete receipt</button>
+      </div>
+      <div class="receipt-items">${itemsHtml}</div>
+    </div>`;
+  }).join('');
+}
+function toggleReceipt(id) {
+  if (openReceipts.has(id)) openReceipts.delete(id);
+  else openReceipts.add(id);
+  const card=document.getElementById('rc-'+id);
+  if (card) card.classList.toggle('open',openReceipts.has(id));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER — DASHBOARD
+// ═══════════════════════════════════════════════════════════════
+function renderDash() {
+  if (!ITEMS.length) {
+    document.getElementById('dash-inner').innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--slate-400)">Import data to see your dashboard</div>`;
+    return;
+  }
+  const leif=ITEMS.filter(i=>i.assignment==='Leif');
+  const nicole=ITEMS.filter(i=>i.assignment==='Nicole');
+  const split=ITEMS.filter(i=>i.assignment==='Split 50/50');
+  const unass=ITEMS.filter(i=>i.assignment==='Unassigned');
+  const leifTotal=leif.reduce((s,i)=>s+i.amount,0)+split.reduce((s,i)=>s+i.amount/2,0);
+  const nicoleTotal=nicole.reduce((s,i)=>s+i.amount,0)+split.reduce((s,i)=>s+i.amount/2,0);
+  const grand=ITEMS.reduce((s,i)=>s+i.amount,0);
+  const net=leifTotal-nicoleTotal;
+  document.getElementById('stat-grid').innerHTML=`
+    <div class="stat-card blue"><div class="stat-label">Total Expenses</div><div class="stat-val blue">${fmt(grand)}</div><div class="stat-sub">${ITEMS.length} items · ${groupByReceipt(ITEMS).length} receipts</div></div>
+    <div class="stat-card blue"><div class="stat-label">Leif Owes</div><div class="stat-val blue">${fmt(leifTotal)}</div><div class="stat-sub">${leif.length} solo + ${split.length} split items</div></div>
+    <div class="stat-card pink"><div class="stat-label">Nicole Owes</div><div class="stat-val pink">${fmt(nicoleTotal)}</div><div class="stat-sub">${nicole.length} solo + ${split.length} split items</div></div>
+    <div class="stat-card amber"><div class="stat-label">Unassigned</div><div class="stat-val amber">${fmt(unass.reduce((s,i)=>s+i.amount,0))}</div><div class="stat-sub">${unass.length} items need review</div></div>`;
+  const balCard=document.getElementById('balance-card');
+  if (Math.abs(net)<0.01) balCard.innerHTML=`<div class="bal-label">Net Balance</div><div class="bal-amount">$0.00</div><div class="bal-sub">All even! 🎉</div>`;
+  else if (net>0) balCard.innerHTML=`<div class="bal-label">Net Balance</div><div class="bal-amount" style="color:#93c5fd">${fmt(net)}</div><div class="bal-sub">Nicole owes Leif</div>`;
+  else balCard.innerHTML=`<div class="bal-label">Net Balance</div><div class="bal-amount" style="color:#f9a8d4">${fmt(Math.abs(net))}</div><div class="bal-sub">Leif owes Nicole</div>`;
+  const total=ITEMS.length||1;
+  const pL=leif.length/total*100,pN=nicole.length/total*100,pS=split.length/total*100,pU=unass.length/total*100;
+  document.getElementById('seg-bar-wrap').innerHTML=`<div class="seg-bar"><div class="seg-leif" style="width:${pL}%"></div><div class="seg-nicole" style="width:${pN}%"></div><div class="seg-split" style="width:${pS}%"></div><div class="seg-unassigned" style="width:${pU}%"></div></div>`;
+  document.getElementById('seg-legend').innerHTML=
+    [['var(--blue-mid)','Leif',leif.length],['var(--pink)','Nicole',nicole.length],['var(--green)','Split',split.length],['var(--amber)','Unassigned',unass.length]]
+    .map(([c,l,n])=>`<div class="leg-item"><div class="leg-dot" style="background:${c}"></div>${l} <strong>${n}</strong></div>`).join('');
+  const catMap=new Map();
+  ITEMS.forEach(i=>{const c=i.cat||'Other';catMap.set(c,(catMap.get(c)||0)+i.amount);});
+  const cats=[...catMap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxC=cats[0]?.[1]||1;
+  document.getElementById('cat-bars').innerHTML=cats.map(([c,a])=>`<div class="bar-row"><div class="bar-name">${esc(c)}</div><div class="bar-track"><div class="bar-fill" style="width:${a/maxC*100}%;background:var(--blue-mid)"></div></div><div class="bar-amt">${fmt(a)}</div></div>`).join('');
+  const storeMap=new Map();
+  ITEMS.forEach(i=>{const s=i.store||'Unknown';storeMap.set(s,(storeMap.get(s)||0)+i.amount);});
+  const stores=[...storeMap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const maxS=stores[0]?.[1]||1;
+  document.getElementById('store-bars').innerHTML=stores.map(([s,a])=>{
+    const meta=getStoreMeta(s);
+    const logoHtml=meta?.domain?`<img class="bar-logo" src="${logoUrl(meta.domain)}" onerror="this.outerHTML='<span>${meta.emoji||storeEmoji(s)}</span>'" alt="${esc(s)}"/>`:`<span>${storeEmoji(s)}</span>`;
+    return `<div class="bar-row"><div class="bar-name">${logoHtml}${esc(s)}</div><div class="bar-track"><div class="bar-fill" style="width:${a/maxS*100}%;background:var(--pink)"></div></div><div class="bar-amt">${fmt(a)}</div></div>`;
+  }).join('');
+  // Draw chart after DOM is ready
+  setTimeout(renderMonthlyChart, 50);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER — TIMELINE
+// ═══════════════════════════════════════════════════════════════
+function renderTimeline() {
+  const body = document.getElementById('timeline-body');
+  if (!ITEMS.length) {
+    body.innerHTML=`<div class="tl-empty"><h3>No receipts yet</h3><p>Import your Simplywise export to see the timeline.</p></div>`;
+    return;
+  }
+  const filterYear   = document.getElementById('tl-year')?.value||'';
+  const filterAssign = document.getElementById('tl-assign')?.value||'';
+  const sortMode     = document.getElementById('tl-sort')?.value||'newest';
+
+  let receipts = groupByReceipt(ITEMS);
+
+  // Filter by year
+  if (filterYear) {
+    receipts = receipts.filter(r=>{
+      const d=parseItemDate(r.date);
+      return d && d.getFullYear()===+filterYear;
+    });
+  }
+  // Filter by assignment (receipt has at least one item with that assignment)
+  if (filterAssign) {
+    receipts = receipts.filter(r=>r.items.some(i=>i.assignment===filterAssign));
+  }
+
+  // Sort
+  receipts.sort((a,b)=>{
+    if (sortMode==='newest') return (parseItemDate(b.date)||0)-(parseItemDate(a.date)||0);
+    if (sortMode==='oldest') return (parseItemDate(a.date)||0)-(parseItemDate(b.date)||0);
+    const ta=a.recTotal||a.items.reduce((s,i)=>s+i.amount,0);
+    const tb=b.recTotal||b.items.reduce((s,i)=>s+i.amount,0);
+    return tb-ta;
+  });
+
+  if (!receipts.length) {
+    body.innerHTML=`<div class="tl-empty"><h3>No receipts match</h3><p>Try changing the year or assignment filter.</p></div>`;
+    return;
+  }
+
+  // Group by month
+  const monthGroups = new Map();
+  for (const r of receipts) {
+    const k = monthKey(r.date)||'Unknown';
+    if (!monthGroups.has(k)) monthGroups.set(k,[]);
+    monthGroups.get(k).push(r);
+  }
+
+  // Max month total for spend bar
+  let maxMonthTotal = 0;
+  for (const [,recs] of monthGroups) {
+    const t = recs.reduce((s,r)=>s+(r.recTotal||r.items.reduce((ss,i)=>ss+i.amount,0)),0);
+    maxMonthTotal = Math.max(maxMonthTotal, t);
+  }
+
+  const html = [...monthGroups.entries()].map(([mk, recs])=>{
+    const monthTotal = recs.reduce((s,r)=>s+(r.recTotal||r.items.reduce((ss,i)=>ss+i.amount,0)),0);
+    const leifAmt  = recs.reduce((s,r)=>s+r.items.filter(i=>i.assignment==='Leif').reduce((ss,i)=>ss+i.amount,0),0);
+    const nicoleAmt= recs.reduce((s,r)=>s+r.items.filter(i=>i.assignment==='Nicole').reduce((ss,i)=>ss+i.amount,0),0);
+    const splitAmt = recs.reduce((s,r)=>s+r.items.filter(i=>i.assignment==='Split 50/50').reduce((ss,i)=>ss+i.amount,0),0);
+    const unassAmt = recs.reduce((s,r)=>s+r.items.filter(i=>i.assignment==='Unassigned').reduce((ss,i)=>ss+i.amount,0),0);
+    const pct = maxMonthTotal>0 ? (monthTotal/maxMonthTotal*100) : 0;
+
+    const cards = recs.map(r=>{
+      const total = r.recTotal||r.items.reduce((s,i)=>s+i.amount,0);
+      const assigned = r.items.filter(i=>i.assignment!=='Unassigned').length;
+      const pctA = r.items.length ? assigned/r.items.length : 0;
+      const statusCls = pctA===1?'done':pctA>0?'partial':'pending';
+      const counts={Leif:0,Nicole:0,'Split 50/50':0,Unassigned:0};
+      r.items.forEach(i=>counts[i.assignment]=(counts[i.assignment]||0)+1);
+      const pills=Object.entries(counts).filter(([,n])=>n>0).map(([k,n])=>{
+        const cls=k==='Split 50/50'?'split':k.toLowerCase();
+        return `<span class="rc-pill ${cls}" style="font-size:10px;padding:2px 6px">${k==='Split 50/50'?'Split':k} ${n}</span>`;
+      }).join('');
+      const dow = dayOfWeek(r.date);
+      const day = dayNum(r.date);
+      return `<div class="tl-card" onclick="goToReceipt('${r.receiptId}')">
+        <div class="tl-card-date">
+          <div class="tl-card-day">${day}</div>
+          <div class="tl-card-dow">${dow}</div>
+        </div>
+        <div class="tl-card-icon">${logoImg(r.store,'rc-icon').replace('width:40px;height:40px','width:36px;height:36px')}</div>
+        <div class="tl-card-info">
+          <div class="tl-card-store">${esc(r.store||'Unknown')}</div>
+          <div class="tl-card-meta">${r.receiptId} · ${r.items.length} items${r.payment?' · '+esc(r.payment):''}</div>
+        </div>
+        <div class="tl-card-pills">${pills}</div>
+        <div class="tl-card-amt">${fmt(total)}</div>
+        <div class="tl-card-status ${statusCls}" title="${statusCls}"></div>
+      </div>`;
+    }).join('');
+
+    return `<div class="tl-month-group">
+      <div class="tl-month-header">
+        <div class="tl-month-label">${monthLabel(mk)}</div>
+        <div class="tl-spend-bar"><div class="tl-spend-fill" style="width:${pct}%"></div></div>
+        <div class="tl-month-stats">
+          <span class="tl-mstat total">${fmt(monthTotal)} · ${recs.length} receipts</span>
+          ${leifAmt>0?`<span class="tl-mstat leif">L ${fmt(leifAmt)}</span>`:''}
+          ${nicoleAmt>0?`<span class="tl-mstat nicole">N ${fmt(nicoleAmt)}</span>`:''}
+          ${splitAmt>0?`<span class="tl-mstat split">S ${fmt(splitAmt)}</span>`:''}
+          ${unassAmt>0?`<span class="tl-mstat unass">? ${fmt(unassAmt)}</span>`:''}
+        </div>
+      </div>
+      <div class="tl-receipts">${cards}</div>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = html;
+}
+
+function goToReceipt(receiptId) {
+  // Switch to Review page and open that receipt
+  showPage('review', document.querySelector('.nav-btn'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.nav-btn[onclick*="review"]').classList.add('active');
+  openReceipts.add(receiptId);
+  renderReview();
+  setTimeout(()=>{
+    const el=document.getElementById('rc-'+receiptId);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER — RECEIPTS LIST
+// ═══════════════════════════════════════════════════════════════
+function renderReceiptsList() {
+  const q=(document.getElementById('rt-search')?.value||'').toLowerCase();
+  const sortVal=document.getElementById('rt-sort')?.value||'date-desc';
+  let receipts=groupByReceipt(ITEMS);
+  if (q) receipts=receipts.filter(r=>r.store.toLowerCase().includes(q)||r.date.toLowerCase().includes(q));
+  receipts.sort((a,b)=>{
+    if (sortVal==='date-desc') return (parseItemDate(b.date)||0)-(parseItemDate(a.date)||0);
+    if (sortVal==='date-asc')  return (parseItemDate(a.date)||0)-(parseItemDate(b.date)||0);
+    const ta=a.recTotal||a.items.reduce((s,i)=>s+i.amount,0);
+    const tb=b.recTotal||b.items.reduce((s,i)=>s+i.amount,0);
+    if (sortVal==='amt-desc') return tb-ta;
+    if (sortVal==='amt-asc')  return ta-tb;
+    if (sortVal==='store')    return a.store.localeCompare(b.store);
+    return 0;
+  });
+  const ca=document.getElementById('check-all');
+  if (ca) ca.checked=false;
+  selectedReceipts.clear();
+  updateDelSelectedBtn();
+  document.getElementById('rt-body').innerHTML=receipts.map(r=>{
+    const total=r.recTotal||r.items.reduce((s,i)=>s+i.amount,0);
+    const assigned=r.items.filter(i=>i.assignment!=='Unassigned').length;
+    const pct=r.items.length?assigned/r.items.length:0;
+    const [badge,cls]=pct===1?['✅ Done','done']:pct>0?['🔄 Partial','partial']:['⚪ Pending','pending'];
+    const isSelected=selectedReceipts.has(r.receiptId);
+    return `<div class="rt-row${isSelected?' selected':''}">
+      <div><input type="checkbox" class="rt-check rt-check-row" data-rid="${r.receiptId}" ${isSelected?'checked':''} onchange="toggleRowSelect(this,'${r.receiptId}')"/></div>
+      <div>${smallLogoImg(r.store)}</div>
+      <div class="rt-store">${esc(r.store||'—')}</div>
+      <div class="rt-date">${esc(r.date||'—')}</div>
+      <div class="rt-amt">$${total.toFixed(2)}</div>
+      <div>${r.items.length}</div>
+      <div>${assigned}/${r.items.length}</div>
+      <div><span class="badge ${cls}">${badge}</span></div>
+      <div><button class="rt-del-btn" onclick="deleteReceipt('${r.receiptId}')" title="Delete">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button></div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function fmt(n){return '$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function updateProgress(){const t=ITEMS.length,a=ITEMS.filter(i=>i.assignment!=='Unassigned').length;document.getElementById('prog-fill').style.width=t?(a/t*100)+'%':'0%';}
+function updateSub(){const t=ITEMS.length;if(!t){document.getElementById('topbar-sub').textContent='Import your Simplywise export to get started';return;}const a=ITEMS.filter(i=>i.assignment!=='Unassigned').length;document.getElementById('topbar-sub').textContent=`${t} items · ${a} assigned · ${t-a} remaining`;}
+let toastT;
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),3500);}
+function showModal(title,body,buttons){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').textContent=body;
+  document.getElementById('modal-btns').innerHTML=buttons.map((b,i)=>`<button class="mbtn ${b.cls||''}" onclick="closeModal(${i})">${b.label}</button>`).join('');
+  document.getElementById('modal-overlay').classList.add('open');
+  window._mb=buttons;
+}
+function closeModal(i){document.getElementById('modal-overlay').classList.remove('open');if(window._mb[i]?.action)window._mb[i].action();}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal(0);});
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='dash')renderDash();
+  if(name==='receipts')renderReceiptsList();
+  if(name==='timeline')renderTimeline();
+}
+function renderAll(){populateDropdowns();renderReview();updateProgress();updateSub();updateActiveTags();updateClearBtn();}
+
+// Redraw chart on resize
+window.addEventListener('resize',()=>{
+  if(document.getElementById('page-dash').classList.contains('active')) renderMonthlyChart();
+});
+
+// BOOT
+load();
+renderAll();
+</script>
+
+</body></html>
