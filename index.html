@@ -526,29 +526,35 @@ Analytics</button>
 // STORE LOGOS
 // ═══════════════════════════════════════════════════════════════
 const STORE_META = {
-  'Safeway':           { domain:'safeway.com',          emoji:'🛒' },
-  'Safeway Pharmacy':  { domain:'safeway.com',          emoji:'💊' },
-  'Target':            { domain:'target.com',           emoji:'🎯' },
-  'Fred Meyer':        { domain:'fredmeyer.com',        emoji:'🛍️' },
-  "Trader Joe's":      { domain:'traderjoes.com',       emoji:'🌿' },
-  'Costco':            { domain:'costco.com',           emoji:'📦' },
-  'Home Goods':        { domain:'homegoods.com',        emoji:'🏠' },
-  'HomeGoods':         { domain:'homegoods.com',        emoji:'🏠' },
-  'Whole Foods':       { domain:'wholefoodsmarket.com', emoji:'🥦' },
-  'Joann':             { domain:'joann.com',            emoji:'🧵' },
-  'QFC':               { domain:'qfc.com',              emoji:'🛒' },
-  'Value Village':     { domain:'valuevillage.com',     emoji:'♻️' },
-  'Nordstrom':         { domain:'nordstrom.com',        emoji:'👗' },
-  'Amazon':            { domain:'amazon.com',           emoji:'📦' },
-  'Walmart':           { domain:'walmart.com',          emoji:'🏪' },
-  'CVS':               { domain:'cvs.com',              emoji:'💊' },
-  'Walgreens':         { domain:'walgreens.com',        emoji:'💊' },
-  'Starbucks':         { domain:'starbucks.com',        emoji:'☕' },
-  "McDonald's":        { domain:'mcdonalds.com',        emoji:'🍔' },
-  'Home Depot':        { domain:'homedepot.com',        emoji:'🔨' },
-  "Lowe's":            { domain:'lowes.com',            emoji:'🔧' },
-  'Best Buy':          { domain:'bestbuy.com',          emoji:'📺' },
+  "Safeway":            { domain:"safeway.com",           emoji:"🛒" },
+  "Safeway Pharmacy":   { domain:"safeway.com",           emoji:"💊" },
+  "Target":             { domain:"target.com",            emoji:"🎯" },
+  "Fred Meyer":         { domain:"fredmeyer.com",         emoji:"🛍️" },
+  "Trader Joes":        { domain:"traderjoes.com",        emoji:"🌿" },
+  "Trader Joe's":       { domain:"traderjoes.com",        emoji:"🌿" },
+  "Costco":             { domain:"costco.com",            emoji:"📦" },
+  "Home Goods":         { domain:"homegoods.com",         emoji:"🏠" },
+  "HomeGoods":          { domain:"homegoods.com",         emoji:"🏠" },
+  "Whole Foods":        { domain:"wholefoodsmarket.com",  emoji:"🥦" },
+  "Whole Foods Market": { domain:"wholefoodsmarket.com",  emoji:"🥦" },
+  "Joann":              { domain:"joann.com",             emoji:"🧵" },
+  "QFC":                { domain:"qfc.com",               emoji:"🛒" },
+  "Value Village":      { domain:"valuevillage.com",      emoji:"♻️" },
+  "Nordstrom":          { domain:"nordstrom.com",         emoji:"👗" },
+  "Amazon":             { domain:"amazon.com",            emoji:"📦" },
+  "Walmart":            { domain:"walmart.com",           emoji:"🏪" },
+  "Walgreens":          { domain:"walgreens.com",         emoji:"💊" },
+  "CVS":                { domain:"cvs.com",               emoji:"💊" },
+  "Starbucks":          { domain:"starbucks.com",         emoji:"☕" },
+  "McDonalds":          { domain:"mcdonalds.com",         emoji:"🍔" },
+  "Subway":             { domain:"subway.com",            emoji:"🥖" },
+  "Home Depot":         { domain:"homedepot.com",         emoji:"🔨" },
+  "Lowes":              { domain:"lowes.com",             emoji:"🔧" },
+  "Best Buy":           { domain:"bestbuy.com",           emoji:"💻" },
+  "PetSmart":           { domain:"petsmart.com",          emoji:"🐾" },
+  "Petco":              { domain:"petco.com",             emoji:"🐾" }
 };
+
 function getStoreMeta(name) {
   if (!name) return null;
   if (STORE_META[name]) return STORE_META[name];
@@ -558,6 +564,17 @@ function getStoreMeta(name) {
   }
   return null;
 }
+
+function storeLogo(name) {
+  const meta = getStoreMeta(name);
+  if (!meta) return '<span style="font-size:22px;">🏪</span>';
+  const fallback = '<span style="font-size:22px;display:none;">' + meta.emoji + '</span>';
+  const img = '<img src="https://logo.clearbit.com/' + meta.domain + '" '
+    + 'style="width:26px;height:26px;border-radius:5px;object-fit:contain;vertical-align:middle;" '
+    + 'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'inline\';" />';
+  return img + fallback;
+}
+
 function logoUrl(domain) { return `https://logo.clearbit.com/${domain}?size=64`; }
 function logoImg(storeName, cls='rc-icon') {
   const meta = getStoreMeta(storeName);
@@ -1561,6 +1578,147 @@ function editItemAmt(id, evt) {
   };
   inp.addEventListener('blur', save);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = old.toFixed(2); inp.blur(); } });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANALYTICS DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════════
+function renderAnalytics() {
+  const el = document.getElementById('analytics-body');
+  if (!el) return;
+  if (!ITEMS.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;font-size:14px;">Import receipts to see analytics.</div>';
+    return;
+  }
+  const total  = ITEMS.reduce((s,i) => s + i.amount, 0);
+  const leif   = ITEMS.filter(i => i.assignment==='Leif').reduce((s,i) => s+i.amount, 0);
+  const nicole = ITEMS.filter(i => i.assignment==='Nicole').reduce((s,i) => s+i.amount, 0);
+  const split  = ITEMS.filter(i => i.assignment==='Split 50/50').reduce((s,i) => s+i.amount, 0);
+  const unass  = ITEMS.filter(i => i.assignment==='Unassigned').reduce((s,i) => s+i.amount, 0);
+
+  // By store
+  const byStore = {};
+  ITEMS.forEach(i => { byStore[i.store] = (byStore[i.store]||0) + i.amount; });
+  const topStores = Object.entries(byStore).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // By month
+  const byMonth = {};
+  ITEMS.forEach(i => {
+    const m = (i.date||'').slice(0,7) || 'Unknown';
+    byMonth[m] = (byMonth[m]||0) + i.amount;
+  });
+  const months = Object.entries(byMonth).sort((a,b)=>a[0].localeCompare(b[0]));
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;">
+      <div style="background:#f0f9ff;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Total Spent</div>
+        <div style="font-size:22px;font-weight:700;color:#1e293b;">$${total.toFixed(2)}</div>
+      </div>
+      <div style="background:#dbeafe;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Leif Owes</div>
+        <div style="font-size:22px;font-weight:700;color:#1d4ed8;">$${(leif+split/2).toFixed(2)}</div>
+      </div>
+      <div style="background:#fce7f3;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Nicole Owes</div>
+        <div style="font-size:22px;font-weight:700;color:#be185d;">$${(nicole+split/2).toFixed(2)}</div>
+      </div>
+      <div style="background:#fef3c7;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Unassigned</div>
+        <div style="font-size:22px;font-weight:700;color:#92400e;">$${unass.toFixed(2)}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap;">
+      <div>
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 12px;color:#374151;">Top Stores</h3>
+        ${topStores.map(([store,amt]) => {
+          const meta = getStoreMeta(store);
+          return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f3f4f6;">'
+            + '<span style="font-size:16px;">' + (meta ? meta.emoji : '🏪') + '</span>'
+            + '<span style="font-size:13px;color:#374151;flex:1;">' + esc(store) + '</span>'
+            + '<span style="font-size:13px;font-weight:600;color:#1e293b;">$' + amt.toFixed(2) + '</span>'
+            + '</div>';
+        }).join('')}
+      </div>
+      <div>
+        <h3 style="font-size:14px;font-weight:600;margin:0 0 12px;color:#374151;">Spending by Month</h3>
+        ${months.map(([month,amt]) => {
+          const pct = total > 0 ? Math.round(amt/total*100) : 0;
+          return '<div style="margin-bottom:10px;">'
+            + '<div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:3px;">'
+            + '<span>' + month + '</span><span>$' + amt.toFixed(2) + '</span></div>'
+            + '<div style="background:#f3f4f6;border-radius:4px;height:6px;">'
+            + '<div style="background:#3b82f6;border-radius:4px;height:6px;width:' + pct + '%;transition:width .3s;"></div>'
+            + '</div></div>';
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INLINE EDITING
+// ═══════════════════════════════════════════════════════════════════════════
+function editReceiptName(rid, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('rname-' + rid);
+  if (!el) return;
+  const old = el.textContent;
+  const inp = document.createElement('input');
+  inp.value = old;
+  inp.style.cssText = 'width:100%;font:inherit;border:1px solid #3b82f6;border-radius:4px;padding:2px 6px;background:#fff;';
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim() || old;
+    ITEMS.filter(i => i.receiptId === rid).forEach(i => i.store = val);
+    save_data(); renderAll();
+    showToast('Receipt name updated');
+  };
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e => { if (e.key==='Enter') inp.blur(); if (e.key==='Escape'){inp.value=old;inp.blur();} });
+}
+
+function editItemDesc(id, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('li-desc-' + id);
+  if (!el) return;
+  const item = ITEMS.find(i => i.id === id);
+  const old = item ? item.desc : el.textContent;
+  const inp = document.createElement('input');
+  inp.value = old;
+  inp.style.cssText = 'width:100%;font:inherit;border:1px solid #3b82f6;border-radius:4px;padding:2px 4px;font-size:12px;background:#fff;';
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim() || old;
+    if (item) item.desc = val;
+    save_data(); renderAll();
+    showToast('Item name updated');
+  };
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e => { if (e.key==='Enter') inp.blur(); if (e.key==='Escape'){inp.value=old;inp.blur();} });
+}
+
+function editItemAmt(id, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('li-amt-' + id);
+  if (!el) return;
+  const item = ITEMS.find(i => i.id === id);
+  const old = item ? item.amount : 0;
+  const inp = document.createElement('input');
+  inp.value = old.toFixed(2);
+  inp.type = 'number'; inp.step = '0.01';
+  inp.style.cssText = 'width:70px;font:inherit;border:1px solid #3b82f6;border-radius:4px;padding:2px 4px;font-size:12px;text-align:right;background:#fff;';
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = parseFloat(inp.value);
+    if (!isNaN(val) && item) item.amount = val;
+    save_data(); renderAll();
+    showToast('Item amount updated');
+  };
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e => { if (e.key==='Enter') inp.blur(); if (e.key==='Escape'){inp.value=old.toFixed(2);inp.blur();} });
 }
 </script>
 
