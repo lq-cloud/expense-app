@@ -572,14 +572,8 @@ function storeLogo(name) {
     + 'onerror="this.outerHTML=\'<span style=\"font-size:22px;line-height:1;\">' + emoji + '</span>\';" />';
 }
 
-function logoUrl(domain) { return `https://logo.clearbit.com/${domain}?size=64`; }
-function logoImg(storeName, cls='rc-icon') {
-  const meta = getStoreMeta(storeName);
-  if (meta && meta.domain) {
-    const fb = (meta.emoji||'🏪').replace(/'/g,"\\'");
-    return `<div class="${cls}" style="background:#fff;border:1px solid var(--slate-200)"><img src="${logoUrl(meta.domain)}" alt="${esc(storeName)}" onerror="this.parentElement.innerHTML='${fb}';this.parentElement.classList.add('fallback');this.parentElement.style.background='';this.parentElement.style.border='';" style="width:100%;height:100%;object-fit:contain;padding:4px;border-radius:8px"/></div>`;
-  }
-  return `<div class="${cls} fallback">${meta?.emoji||storeEmoji(storeName)}</div>`;
+function logoUrl(domain) {
+  return 'https://icons.duckduckgo.com/ip3/' + domain + '.ico';
 }
 function storeEmoji(s) {
   const l=(s||'').toLowerCase();
@@ -1773,6 +1767,24 @@ function uploadStoreLogo(input) {
     localStorage.setItem('sw_custom_logos', JSON.stringify(CUSTOM_LOGOS));
     renderCustomLogosList();
     renderAll();
+    // Force re-render of all logo images in receipt cards
+    setTimeout(function() {
+      document.querySelectorAll('.rc-icon img').forEach(function(img) {
+        const card = img.closest('.receipt-card');
+        if (!card) return;
+        const rid = card.id.replace('rc-', '');
+        const items = ITEMS.filter(function(i) { return i.receiptId === rid; });
+        if (!items.length) return;
+        const store = items[0].store;
+        const key = store.toLowerCase();
+        for (const k in CUSTOM_LOGOS) {
+          if (key === k || key.includes(k) || k.includes(key)) {
+            img.src = CUSTOM_LOGOS[k].dataUrl;
+            break;
+          }
+        }
+      });
+    }, 100);
     showToast('✅ Logo saved for ' + storeName);
     document.getElementById('logo-store-name').value = '';
     input.value = '';
@@ -1787,13 +1799,15 @@ function renderCustomLogosList() {
     el.innerHTML = '<span style="font-size:12px;color:#9ca3af;">No custom logos yet</span>';
     return;
   }
-  el.innerHTML = entries.map(({name, dataUrl}) =>
-    '<div style="display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;">'
-    + '<img src="' + dataUrl + '" style="width:20px;height:20px;border-radius:3px;object-fit:contain;" />'
-    + '<span style="font-size:12px;color:#374151;">' + esc(name) + '</span>'
-    + '<button onclick="removeCustomLogo(\'' + name.replace(/'/g,"\\'") + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:0;line-height:1;">✕</button>'
-    + '</div>'
-  ).join('');
+  el.innerHTML = entries.map(function(entry) {
+    const name = entry.name, src = entry.dataUrl || entry.url || '', auto = entry.auto;
+    const badge = auto ? '<span style="font-size:9px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 4px;margin-left:2px;">auto</span>' : '';
+    return '<div style="display:flex;align-items:center;gap:6px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;">'
+      + (src ? '<img src="' + src + '" style="width:20px;height:20px;border-radius:3px;object-fit:contain;" onerror="this.style.display=\'none\'"/>' : '<span>🏪</span>')
+      + '<span style="font-size:12px;color:#374151;">' + esc(name) + badge + '</span>'
+      + '<button onclick="removeCustomLogo(\'' + name.replace(/'/g, "\\'") + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:0;line-height:1;">✕</button>'
+      + '</div>';
+  }).join('');;
 }
 
 function removeCustomLogo(name) {
@@ -1821,7 +1835,9 @@ function storeLogo(name) {
   const customKey = (name||'').toLowerCase();
   for (const [k, v] of Object.entries(CUSTOM_LOGOS)) {
     if (customKey.includes(k) || k.includes(customKey)) {
-      return '<img src="' + v.dataUrl + '" width="26" height="26" style="border-radius:5px;object-fit:contain;vertical-align:middle;" />';
+      const src = v.dataUrl || v.url || '';
+      if (!src) continue;
+      return '<img src="' + src + '" width="26" height="26" style="border-radius:5px;object-fit:contain;vertical-align:middle;" onerror="this.style.display=\'none\';" />';
     }
   }
   // Fall back to Google favicon
@@ -1954,6 +1970,59 @@ function addEditButtons() {
     delBtn.parentNode.insertBefore(editBtn, delBtn);
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTO-LOAD STORE LOGOS FROM DUCKDUCKGO (NO UPLOAD NEEDED)
+// ═══════════════════════════════════════════════════════════════════════════
+function autoLoadAllLogos() {
+  // Get all unique store names from current receipts + common stores
+  const receiptStores = [...new Set(ITEMS.map(i => i.store).filter(Boolean))];
+  const commonStores = Object.keys(STORE_META);
+  const allStores = [...new Set([...receiptStores, ...commonStores])];
+  
+  let loaded = 0;
+  const total = allStores.length;
+  
+  showToast('⚡ Loading logos for ' + total + ' stores...');
+  
+  allStores.forEach(function(storeName) {
+    const meta = getStoreMeta(storeName);
+    if (!meta || !meta.domain) return;
+    const key = storeName.toLowerCase();
+    // Skip if already has a custom uploaded logo
+    if (CUSTOM_LOGOS[key] && CUSTOM_LOGOS[key].dataUrl && !CUSTOM_LOGOS[key].auto) return;
+    
+    // Store the DuckDuckGo URL as an auto logo (not a dataUrl, just a URL)
+    CUSTOM_LOGOS[key] = { 
+      name: storeName, 
+      url: 'https://icons.duckduckgo.com/ip3/' + meta.domain + '.ico',
+      auto: true 
+    };
+    loaded++;
+  });
+  
+  localStorage.setItem('sw_custom_logos', JSON.stringify(CUSTOM_LOGOS));
+  renderCustomLogosList();
+  renderAll();
+  showToast('✅ Auto-loaded logos for ' + loaded + ' stores');
+}
+
+// Also add custom store from receipt stores not in STORE_META
+function addStoreFromReceipts() {
+  const receiptStores = [...new Set(ITEMS.map(i => i.store).filter(Boolean))];
+  receiptStores.forEach(function(storeName) {
+    const key = storeName.toLowerCase();
+    if (CUSTOM_LOGOS[key]) return; // already has logo
+    const meta = getStoreMeta(storeName);
+    if (meta && meta.domain) {
+      CUSTOM_LOGOS[key] = {
+        name: storeName,
+        url: 'https://icons.duckduckgo.com/ip3/' + meta.domain + '.ico',
+        auto: true
+      };
+    }
+  });
+}
 </script>
 
 <div id="page-analytics" class="page" style="display:none;">
@@ -1979,6 +2048,7 @@ function addEditButtons() {
           <p style="margin:4px 0 0;font-size:12px;color:#6b7280;">Upload a logo image for any store. It will appear on all receipts from that store.</p>
         </div>
         <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+          <button onclick="autoLoadAllLogos()" style="background:#10b981;color:#fff;border:none;padding:9px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;">⚡ Auto-Load All Store Logos (No Upload Needed)</button>
           <div style="display:flex;gap:8px;align-items:center;">
             <input id="logo-store-name" placeholder="Store name (e.g. Safeway)" style="flex:1;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;" />
             <label style="background:#3b82f6;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
