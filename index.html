@@ -364,16 +364,9 @@ Settings</button></div>
 <span>Import Excel</span>
 <input accept=".xlsx,.xls" id="file-import" style="display:none" type="file"/>
 </label>
-<button class="tbtn" onclick="saveBackup()" title="Download JSON backup">
-<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg><span>Backup</span>
-</button>
-<label class="tbtn" title="Restore from JSON backup">
-<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg><span>Restore</span>
-<input accept=".json" id="file-restore" style="display:none" type="file"/>
-</label>
-<button class="tbtn" onclick="exportCSV()" title="Export as CSV">
-<svg fill="currentColor" height="13" viewbox="0 0 20 20" width="13"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg><span>CSV</span>
-</button>
+
+
+
 </div>
 </div>
 <div id="prog-wrap"><div id="prog-fill"></div></div>
@@ -1238,7 +1231,7 @@ function renderReview() {
         </div>
         <div class="rc-pills">${pills}</div>
         <div class="rc-total">$${total.toFixed(2)}</div>
-        <button class="rc-delete" onclick="event.stopPropagation();deleteReceipt('${r.receiptId}')" title="Delete receipt">
+        n        <button class="rc-delete" onclick="event.stopPropagation();deleteReceipt('${r.receiptId}')" title="Delete receipt">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
@@ -1507,7 +1500,7 @@ function showPage(name,btn){
   if(name==='receipts')renderReceiptsList();
   if(name==='timeline')renderTimeline();
 }
-function renderAll(){populateDropdowns();renderReview();updateProgress();updateSub();updateActiveTags();updateClearBtn();}
+function renderAll(){populateDropdowns();renderReview();updateProgress();updateSub();updateActiveTags();updateClearBtn();setTimeout(addEditButtons,50);}
 
 // Redraw chart on resize
 window.addEventListener('resize',()=>{
@@ -1940,6 +1933,24 @@ function saveEditReceipt() {
   renderAll();
   closeEditReceipt();
   showToast('✅ Receipt updated');
+}
+
+// Add edit buttons to receipt cards after render
+function addEditButtons() {
+  document.querySelectorAll('.receipt-card').forEach(function(card) {
+    if (card.querySelector('.rc-edit-btn')) return; // already added
+    const rid = card.id.replace('rc-', '');
+    const header = card.querySelector('.receipt-header');
+    const delBtn = card.querySelector('.rc-delete');
+    if (!header || !delBtn) return;
+    const editBtn = document.createElement('button');
+    editBtn.className = 'rc-edit-btn';
+    editBtn.title = 'Edit receipt';
+    editBtn.innerHTML = '&#9999;&#65039; Edit';
+    editBtn.style.cssText = 'background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:5px;padding:3px 8px;cursor:pointer;font-size:11px;font-weight:600;margin-right:4px;';
+    editBtn.onclick = function(e) { e.stopPropagation(); openEditReceipt(rid); };
+    delBtn.parentNode.insertBefore(editBtn, delBtn);
+  });
 }
 </script>
 
