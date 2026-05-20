@@ -2023,6 +2023,37 @@ function addStoreFromReceipts() {
     }
   });
 }
+
+function logoImg(storeName, cls) {
+  cls = cls || 'rc-icon';
+  // Check custom uploaded logos first (both manual and auto-loaded)
+  if (storeName && typeof CUSTOM_LOGOS !== 'undefined') {
+    const key = storeName.toLowerCase();
+    for (const k in CUSTOM_LOGOS) {
+      if (key === k || key.includes(k) || k.includes(key)) {
+        const v = CUSTOM_LOGOS[k];
+        const src = v.dataUrl || v.url || '';
+        if (src) {
+          return '<div class="' + cls + '" style="background:#fff;border:1px solid var(--slate-200)">'
+            + '<img src="' + src + '" alt="' + esc(storeName) + '" '
+            + 'onerror="this.parentElement.innerHTML=\'🏪\';this.parentElement.classList.add(\'fallback\');this.parentElement.style.background=\'\';this.parentElement.style.border=\'\'" '
+            + 'style="width:100%;height:100%;object-fit:contain;padding:4px;border-radius:8px"/></div>';
+        }
+      }
+    }
+  }
+  // Fall back to DuckDuckGo favicon or emoji
+  const meta = getStoreMeta(storeName);
+  if (meta && meta.domain) {
+    const emoji = meta.emoji || '🏪';
+    return '<div class="' + cls + '" style="background:#fff;border:1px solid var(--slate-200)">'
+      + '<img src="https://icons.duckduckgo.com/ip3/' + meta.domain + '.ico" alt="' + esc(storeName) + '" '
+      + 'onerror="this.parentElement.innerHTML=\''+emoji+'\';this.parentElement.classList.add(\'fallback\');this.parentElement.style.background=\'\';this.parentElement.style.border=\'\'" '
+      + 'style="width:100%;height:100%;object-fit:contain;padding:4px;border-radius:8px"/></div>';
+  }
+  const fallbackEmoji = (meta && meta.emoji) ? meta.emoji : storeEmoji(storeName);
+  return '<div class="' + cls + ' fallback">' + fallbackEmoji + '</div>';
+}
 </script>
 
 <div id="page-analytics" class="page" style="display:none;">
