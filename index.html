@@ -604,6 +604,10 @@ function smallLogoImg(storeName) {
 // STATE
 // ═══════════════════════════════════════════════════════════════
 const STORE_KEY = 'expense_v2';
+
+// ── GLOBAL STATE ──────────────────────────────────────────────────────────
+let PREFS = JSON.parse(localStorage.getItem('sw_prefs')||'{"logos":true,"payment":true,"expand":false,"confirmDelete":true}');
+let CUSTOM_LOGOS = JSON.parse(localStorage.getItem('sw_custom_logos')||'{}');
 let ITEMS = [];
 let openReceipts = new Set();
 let selectedReceipts = new Set();
@@ -838,7 +842,7 @@ function saveBackup() {
   a.download=`expense-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
   showToast('✅ Backup downloaded');
 }
-document.getElementById('file-restore').addEventListener('change', function(e) {
+var _fr=document.getElementById('file-restore');if(_fr)_fr.addEventListener('change', function(e) {
   const file=e.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=function(ev) {
@@ -1721,8 +1725,6 @@ function editItemAmt(id, evt) {
 // ═══════════════════════════════════════════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════════════════════════════════════════
-let PREFS = JSON.parse(localStorage.getItem('sw_prefs')||'{"logos":true,"payment":true,"expand":false,"confirmDelete":true}');
-let CUSTOM_LOGOS = JSON.parse(localStorage.getItem('sw_custom_logos')||'{}');
 
 function openSettings() {
   // Populate card inputs
