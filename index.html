@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>💳 Leif &amp; Nicole — Expense Splitter</title>
-<script src="xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root {
   --blue:      #3b82f6;
@@ -158,7 +158,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .lbtn.as{background:var(--green);border-color:var(--green);color:#fff}
 .lbtn.clr{color:var(--slate-400);font-size:10px}
 .lbtn.clr:hover{background:var(--amber-lt);border-color:var(--amber);color:var(--amber-dk)}
-.lbtn.edit-btn{padding:4px 7px;font-size:11px;color:var(--slate-400);border-color:var(--slate-200)}.lbtn.edit-btn:hover{background:var(--blue-lt);border-color:var(--blue-mid);color:var(--blue-mid)}
 
 /* ── EMPTY / NO RESULTS ── */
 #empty-state{text-align:center;padding:100px 20px}
@@ -353,6 +352,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <button class="nav-btn" onclick="showPage('receipts',this)">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><rect height="4" rx="1" width="6" x="9" y="3"></rect></svg>Receipts
     </button>
+<button class="nav-btn" onclick="showPage('analytics',this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg>
+Analytics</button>
 </div>
 <div id="topbar-actions">
 <label class="tbtn primary" title="Import Simplywise Excel export">
@@ -855,58 +857,6 @@ function exportCSV() {
 function assign(id, val) { ITEMS[id].assignment=val; save(); renderReview(); updateProgress(); updateSub(); }
 function bulkAssign(rid, val) { ITEMS.filter(i=>i.receiptId===rid).forEach(i=>i.assignment=val); save(); renderReview(); updateProgress(); updateSub(); }
 
-// ── Inline editing ────────────────────────────────────────────────────────
-function editReceiptName(rid, evt) {
-  evt.stopPropagation();
-  const el = document.querySelector(`#rc-${rid} .rc-store`);
-  if (!el || el.querySelector('input')) return;
-  const cur = ITEMS.filter(i=>i.receiptId===rid)[0]?.store || '';
-  el.innerHTML = `<input class="edit-input" value="${esc(cur)}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()" onblur="saveReceiptName('${rid}',this.value)" style="width:100%;font:inherit;border:1px solid var(--blue-400);border-radius:4px;padding:2px 6px;outline:none;background:#fff;color:#1e293b"/>`;
-  el.querySelector('input').focus();
-  el.querySelector('input').select();
-}
-function saveReceiptName(rid, val) {
-  val = val.trim();
-  if (!val) { renderReview(); return; }
-  ITEMS.filter(i=>i.receiptId===rid).forEach(i=>i.store=val);
-  save(); renderReview();
-  showToast('✏️ Receipt name updated');
-}
-
-function editItemDesc(id, evt) {
-  evt.stopPropagation();
-  const el = document.getElementById('li-desc-'+id);
-  if (!el || el.querySelector('input')) return;
-  const cur = ITEMS[id]?.desc || '';
-  el.innerHTML = `<input class="edit-input" value="${esc(cur)}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()" onblur="saveItemDesc(${id},this.value)" style="width:100%;font:inherit;border:1px solid var(--blue-400);border-radius:4px;padding:2px 6px;outline:none;background:#fff;color:#1e293b"/>`;
-  el.querySelector('input').focus();
-  el.querySelector('input').select();
-}
-function saveItemDesc(id, val) {
-  val = val.trim();
-  if (!val) { renderReview(); return; }
-  ITEMS[id].desc = val;
-  save(); renderReview();
-  showToast('✏️ Item name updated');
-}
-
-function editItemAmt(id, evt) {
-  evt.stopPropagation();
-  const el = document.getElementById('li-amt-'+id);
-  if (!el || el.querySelector('input')) return;
-  const cur = ITEMS[id]?.amount ?? '';
-  el.innerHTML = `<input class="edit-input" type="number" step="0.01" value="${cur}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')this.blur()" onblur="saveItemAmt(${id},this.value)" style="width:72px;font:inherit;border:1px solid var(--blue-400);border-radius:4px;padding:2px 6px;outline:none;background:#fff;color:#1e293b;text-align:right"/>`;
-  el.querySelector('input').focus();
-  el.querySelector('input').select();
-}
-function saveItemAmt(id, val) {
-  const n = parseFloat(val);
-  if (isNaN(n)) { renderReview(); return; }
-  ITEMS[id].amount = n;
-  save(); renderReview(); updateProgress(); updateSub();
-  showToast('✏️ Item amount updated');
-}
-
 // ═══════════════════════════════════════════════════════════════
 // FILTER LOGIC
 // ═══════════════════════════════════════════════════════════════
@@ -1246,25 +1196,23 @@ function renderReview() {
     const itemsHtml=r.items.map(item=>{
       const a=item.assignment;
       const isMatch=F.q&&item.desc.toLowerCase().includes(F.q);
-      return `<div class=\"line-item${isMatch?\' item-match\':\'\'}\">\
-        <div class=\"li-info\"><div class=\"li-desc\" id=\"li-desc-${item.id}\" title=\"${esc(item.desc)}\">${highlight(item.desc,F.q)}</div>${item.cat?`<div class=\"li-cat\">${esc(item.cat)}</div>`:''}</div>\
-        <div class=\"li-amt\" id=\"li-amt-${item.id}\">$${item.amount.toFixed(2)}</div>\
-        <div class=\"li-btns\">\
-          <button class=\"lbtn edit-btn\" onclick=\"editItemDesc(${item.id},event)\" title=\"Edit description\">✏️</button>\
-          <button class=\"lbtn edit-btn\" onclick=\"editItemAmt(${item.id},event)\" title=\"Edit amount\">$</button>\
-          <button class=\"lbtn${a===\'Leif\'?\' al\':\'\'}\" onclick=\"assign(${item.id},\'Leif\')\">L</button>\
-          <button class=\"lbtn${a===\'Nicole\'?\' an\':\'\'}\" onclick=\"assign(${item.id},\'Nicole\')\">N</button>\
-          <button class=\"lbtn${a===\'Split 50/50\'?\' as\':\'\'}\" onclick=\"assign(${item.id},\'Split 50/50\')\">S</button>\
-          ${a!==\'Unassigned\'?`<button class=\"lbtn clr\" onclick=\"assign(${item.id},\'Unassigned\')\" title=\"Clear\">✕</button>`:''}\
-        </div>\
-      </div>`;\
+      return `<div class="line-item${isMatch?' item-match':''}">
+        <div class="li-info"><div class="li-desc" title="${esc(item.desc)}">${highlight(item.desc,F.q)}</div>${item.cat?`<div class="li-cat">${esc(item.cat)}</div>`:''}</div>
+        <div class="li-amt">$${item.amount.toFixed(2)}</div>
+        <div class="li-btns">
+          <button class="lbtn${a==='Leif'?' al':''}" onclick="assign(${item.id},'Leif')">L</button>
+          <button class="lbtn${a==='Nicole'?' an':''}" onclick="assign(${item.id},'Nicole')">N</button>
+          <button class="lbtn${a==='Split 50/50'?' as':''}" onclick="assign(${item.id},'Split 50/50')">S</button>
+          ${a!=='Unassigned'?`<button class="lbtn clr" onclick="assign(${item.id},'Unassigned')" title="Clear">✕</button>`:''}
+        </div>
+      </div>`;
     }).join('');
     return `<div class="receipt-card${isOpen?' open':''}" id="rc-${r.receiptId}">
       <div class="receipt-header" onclick="toggleReceipt('${r.receiptId}')">
         <span class="rc-chevron">▶</span>
         ${logoImg(r.store)}
         <div class="rc-info">
-          <div class="rc-store">${highlight(r.store||'Unknown',F.q)}<button class=\"edit-btn\" onclick=\"editReceiptName(\\'${r.receiptId}\\',event)\" title=\"Edit name\">✏️</button></div>
+          <div class="rc-store">${highlight(r.store||'Unknown',F.q)}</div>
           <div class="rc-meta">${esc(r.date||'')} · ${r.receiptId} · ${r.items.length} items${r.payment?' · '+esc(r.payment):''}</div>
         </div>
         <div class="rc-pills">${pills}</div>
@@ -1529,6 +1477,7 @@ function showModal(title,body,buttons){
 function closeModal(i){document.getElementById('modal-overlay').classList.remove('open');if(window._mb[i]?.action)window._mb[i].action();}
 document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal(0);});
 function showPage(name,btn){
+  if(name==='analytics')setTimeout(renderAnalytics,50);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -1547,6 +1496,79 @@ window.addEventListener('resize',()=>{
 // BOOT
 load();
 renderAll();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INLINE EDITING
+// ═══════════════════════════════════════════════════════════════════════════
+function editReceiptName(rid, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('rname-' + rid);
+  if (!el) return;
+  const old = el.textContent;
+  const inp = document.createElement('input');
+  inp.value = old;
+  inp.style.cssText = 'width:100%;font:inherit;border:1px solid #3b82f6;border-radius:4px;padding:2px 6px;';
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim() || old;
+    ITEMS.filter(i => i.receiptId === rid).forEach(i => i.store = val);
+    save_data(); renderAll();
+    showToast('Receipt name updated');
+  };
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = old; inp.blur(); } });
+}
+
+function editItemDesc(id, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('li-desc-' + id);
+  if (!el) return;
+  const item = ITEMS.find(i => i.id === id);
+  const old = item ? item.desc : el.textContent;
+  const inp = document.createElement('input');
+  inp.value = old;
+  inp.style.cssText = 'width:100%;font:inherit;border:1px solid #3b82f6;border-radius:4px;padding:2px 4px;font-size:12px;';
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = inp.value.trim() || old;
+    if (item) item.desc = val;
+    save_data(); renderAll();
+    showToast('Item name updated');
+  };
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = old; inp.blur(); } });
+}
+
+function editItemAmt(id, evt) {
+  evt.stopPropagation();
+  const el = document.getElementById('li-amt-' + id);
+  if (!el) return;
+  const item = ITEMS.find(i => i.id === id);
+  const old = item ? item.amount : 0;
+  const inp = document.createElement('input');
+  inp.value = old.toFixed(2);
+  inp.type = 'number'; inp.step = '0.01';
+  inp.style.cssText = 'width:70px;font:inherit;border:1px solid #3b82f6;border-radius:4px;padding:2px 4px;font-size:12px;text-align:right;';
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+  const save = () => {
+    const val = parseFloat(inp.value);
+    if (!isNaN(val) && item) item.amount = val;
+    save_data(); renderAll();
+    showToast('Item amount updated');
+  };
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = old.toFixed(2); inp.blur(); } });
+}
 </script>
+
+<div id="page-analytics" class="page" style="display:none;">
+  <div style="padding:16px 20px;border-bottom:1px solid #e5e7eb;">
+    <h2 style="margin:0;font-size:16px;font-weight:700;color:#1e293b;">📊 Analytics</h2>
+  </div>
+  <div id="analytics-body" style="padding:20px;"></div>
+</div>
 </body>
 </html>
