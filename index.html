@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0053)https://7777-iakfh61uhswrdphhr16ja.e2b.app/index.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>💳 Leif &amp; Nicole — Expense Splitter</title>
-<script src="./index_files/xlsx.full.min.js"></script>
+<script src="xlsx.full.min.js"></script>
 <style>
 :root {
   --blue:      #3b82f6;
@@ -340,34 +341,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 </div>
 <div id="topbar-nav">
-<button class="nav-btn active" onclick="showPage(&#39;review&#39;,this)">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>Review
+<button class="nav-btn active" onclick="showPage('review',this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><rect height="14" rx="2" width="20" x="2" y="5"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>Review
     </button>
-<button class="nav-btn" onclick="showPage(&#39;dash&#39;,this)">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Dashboard
+<button class="nav-btn" onclick="showPage('dash',this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>Dashboard
     </button>
-<button class="nav-btn" onclick="showPage(&#39;timeline&#39;,this)">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>Timeline
+<button class="nav-btn" onclick="showPage('timeline',this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>Timeline
     </button>
-<button class="nav-btn" onclick="showPage(&#39;receipts&#39;,this)">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><rect height="4" rx="1" width="6" x="9" y="3"></rect></svg>Receipts
+<button class="nav-btn" onclick="showPage('receipts',this)">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><rect height="4" rx="1" width="6" x="9" y="3"></rect></svg>Receipts
     </button>
 </div>
 <div id="topbar-actions">
 <label class="tbtn primary" title="Import Simplywise Excel export">
-<svg fill="none" height="13" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
 <span>Import Excel</span>
-<input accept=".xlsx,.xls" id="file-import" style="display:none" type="file">
+<input accept=".xlsx,.xls" id="file-import" style="display:none" type="file"/>
 </label>
 <button class="tbtn" onclick="saveBackup()" title="Download JSON backup">
-<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg><span>Backup</span>
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg><span>Backup</span>
 </button>
 <label class="tbtn" title="Restore from JSON backup">
-<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg><span>Restore</span>
-<input accept=".json" id="file-restore" style="display:none" type="file">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg><span>Restore</span>
+<input accept=".json" id="file-restore" style="display:none" type="file"/>
 </label>
 <button class="tbtn" onclick="exportCSV()" title="Export as CSV">
-<svg fill="currentColor" height="13" viewBox="0 0 20 20" width="13"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg><span>CSV</span>
+<svg fill="currentColor" height="13" viewbox="0 0 20 20" width="13"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg><span>CSV</span>
 </button>
 </div>
 </div>
@@ -376,31 +377,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="page active" id="page-review">
 <div id="filter-bar">
 <div id="filter-row1">
-<input autocomplete="off" class="f-input" id="search-input" oninput="applyFilters()" placeholder="Search stores, items, descriptions…" type="search">
+<input autocomplete="off" class="f-input" id="search-input" oninput="applyFilters()" placeholder="Search stores, items, descriptions…" type="search"/>
 <select class="f-input" id="filter-store" onchange="applyFilters()" title="Filter by store"><option value="">🏪 All Stores</option></select>
 <div class="date-range">
 <label>From</label>
-<input class="date-input" id="date-from" onchange="clearPreset();applyFilters()" type="date">
+<input class="date-input" id="date-from" onchange="clearPreset();applyFilters()" type="date"/>
 <label>To</label>
-<input class="date-input" id="date-to" onchange="clearPreset();applyFilters()" type="date">
+<input class="date-input" id="date-to" onchange="clearPreset();applyFilters()" type="date"/>
 </div>
 <div class="preset-row">
-<button class="preset" onclick="setPreset(this,&#39;30d&#39;)">30d</button>
-<button class="preset" onclick="setPreset(this,&#39;90d&#39;)">90d</button>
-<button class="preset" onclick="setPreset(this,&#39;ytd&#39;)">YTD</button>
-<button class="preset active" onclick="setPreset(this,&#39;all&#39;)">All</button>
+<button class="preset" onclick="setPreset(this,'30d')">30d</button>
+<button class="preset" onclick="setPreset(this,'90d')">90d</button>
+<button class="preset" onclick="setPreset(this,'ytd')">YTD</button>
+<button class="preset active" onclick="setPreset(this,'all')">All</button>
 </div>
 <button class="clear-btn hidden" id="clear-all-btn" onclick="clearAllFilters()">
-<svg fill="none" height="11" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="11"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>Clear filters
+<svg fill="none" height="11" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24" width="11"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>Clear filters
       </button>
 </div>
 <div id="filter-row2">
 <div class="chip-row">
-<div class="chip active" data-filter="all" onclick="setChip(this,&#39;all&#39;)">All</div>
-<div class="chip leif-chip" data-filter="Leif" onclick="setChip(this,&#39;Leif&#39;)">🔵 Leif</div>
-<div class="chip nicole-chip" data-filter="Nicole" onclick="setChip(this,&#39;Nicole&#39;)">🩷 Nicole</div>
-<div class="chip split-chip" data-filter="Split 50/50" onclick="setChip(this,&#39;Split 50/50&#39;)">🟢 Split</div>
-<div class="chip unass-chip" data-filter="Unassigned" onclick="setChip(this,&#39;Unassigned&#39;)">⚪ Unassigned</div>
+<div class="chip active" data-filter="all" onclick="setChip(this,'all')">All</div>
+<div class="chip leif-chip" data-filter="Leif" onclick="setChip(this,'Leif')">🔵 Leif</div>
+<div class="chip nicole-chip" data-filter="Nicole" onclick="setChip(this,'Nicole')">🩷 Nicole</div>
+<div class="chip split-chip" data-filter="Split 50/50" onclick="setChip(this,'Split 50/50')">🟢 Split</div>
+<div class="chip unass-chip" data-filter="Unassigned" onclick="setChip(this,'Unassigned')">⚪ Unassigned</div>
 </div>
 <div id="active-tags"></div>
 <div id="filter-stats"></div>
@@ -416,12 +417,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <!-- Monthly Spending Chart (full width) -->
 <div class="dash-card" style="margin-bottom:14px">
 <div class="dash-card-title">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M3 9h18M9 21V9"></path></svg>
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M3 9h18M9 21V9"></path></svg>
         Monthly Spending
         <div class="dc-actions">
-<button class="dc-tab active" id="chart-tab-bar" onclick="switchChartTab(&#39;bar&#39;)">Bar</button>
-<button class="dc-tab" id="chart-tab-line" onclick="switchChartTab(&#39;line&#39;)">Trend</button>
-<button class="dc-tab" id="chart-tab-balance" onclick="switchChartTab(&#39;balance&#39;)">Balance</button>
+<button class="dc-tab active" id="chart-tab-bar" onclick="switchChartTab('bar')">Bar</button>
+<button class="dc-tab" id="chart-tab-line" onclick="switchChartTab('line')">Trend</button>
+<button class="dc-tab" id="chart-tab-balance" onclick="switchChartTab('balance')">Balance</button>
 </div>
 </div>
 <div class="chart-wrap" style="height:220px">
@@ -432,21 +433,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="dash-row">
 <div class="dash-card">
 <div class="dash-card-title">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Assignment Breakdown
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Assignment Breakdown
         </div>
 <div id="seg-bar-wrap"></div>
 <div class="legend" id="seg-legend"></div>
 </div>
 <div class="dash-card">
 <div class="dash-card-title">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path><line x1="7" x2="7.01" y1="7" y2="7"></line></svg>Top Categories
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path><line x1="7" x2="7.01" y1="7" y2="7"></line></svg>Top Categories
         </div>
 <div id="cat-bars"></div>
 </div>
 </div>
 <div class="dash-card">
 <div class="dash-card-title">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>Top Stores
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>Top Stores
       </div>
 <div id="store-bars" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px"></div>
 </div>
@@ -481,7 +482,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="receipts-inner">
 <div id="receipts-toolbar">
 <h2>All Receipts</h2>
-<input id="rt-search" oninput="renderReceiptsList()" placeholder="Search receipts…" type="search">
+<input id="rt-search" oninput="renderReceiptsList()" placeholder="Search receipts…" type="search"/>
 <select id="rt-sort" onchange="renderReceiptsList()">
 <option value="date-desc">Newest first</option>
 <option value="date-asc">Oldest first</option>
@@ -490,13 +491,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <option value="store">Store A–Z</option>
 </select>
 <button id="del-selected-btn" onclick="deleteSelected()">
-<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4h6v2"></path></svg>
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path><path d="M9 6V4h6v2"></path></svg>
         Delete Selected (<span id="sel-count">0</span>)
       </button>
 </div>
 <div class="rtable">
 <div class="rt-hdr">
-<div><input id="check-all" onchange="toggleSelectAll(this)" type="checkbox"></div>
+<div><input id="check-all" onchange="toggleSelectAll(this)" type="checkbox"/></div>
 <div>Logo</div>
 <div>Store</div>
 <div>Date</div>
@@ -1547,5 +1548,5 @@ window.addEventListener('resize',()=>{
 load();
 renderAll();
 </script>
-
-</body></html>
+</body>
+</html>
